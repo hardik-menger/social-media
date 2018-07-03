@@ -20,7 +20,6 @@ class SinglePost extends Component {
       .catch(err => console.log(err));
   }
   render() {
-    console.log(this.props.page.access_token);
     return (
       <div
         className="card"
@@ -29,7 +28,8 @@ class SinglePost extends Component {
         <div
           style={{
             height: "150px",
-            backgroundImage: `url(${this.state.profile_pic})`
+            backgroundImage: `url(${this.state.profile_pic})`,
+            backgroundPosition: `center`
           }}
         />
         <div className="card-body">
