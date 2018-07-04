@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { getpages, setpageloading } from "../actions/pageaction";
+import { loginuser } from "../actions/authaction";
 import SinglePost from "./SinglePost";
 class PageComponent extends Component {
   componentDidMount() {
@@ -21,8 +22,21 @@ class PageComponent extends Component {
       )
         .then(resp => resp.json()) // Transform the data into json
         .then(data => {
-          console.log(data);
-          this.props.getpages(data);
+          console.log(data.error === undefined);
+          if (!data.error === undefined) {
+            window.FB.login(
+              response => {
+                if (response.authResponse) {
+                  localStorage.getItem("auth", JSON.stringify(response));
+                  this.props.loginuser(response);
+                  this.statusChangeCallback();
+                }
+              },
+              { return_scopes: true }
+            );
+          } else {
+            this.props.getpages(data);
+          }
         });
     } else if (status === "not_authorized") {
       alert("Please log into this app.");
@@ -49,5 +63,5 @@ const mapStateToProps = state => {
 };
 export default connect(
   mapStateToProps,
-  { getpages, setpageloading }
+  { getpages, setpageloading, loginuser }
 )(PageComponent);

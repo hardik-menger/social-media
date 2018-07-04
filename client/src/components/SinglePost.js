@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
+import PostForm from "./forms/PostForm";
 class SinglePost extends Component {
   constructor(props) {
     super(props);
@@ -39,7 +40,7 @@ class SinglePost extends Component {
           <p className="card-text">
             {this.props.page.about || "No Description"}
           </p>
-          <Link
+          {/* <Link
             to={
               "/page/" + this.props.page.id + "/" + this.props.page.access_token
             }
@@ -47,7 +48,52 @@ class SinglePost extends Component {
             className="btn btn-primary"
           >
             Go somewhere
-          </Link>
+          </Link> */}
+          <button
+            type="button"
+            className="btn btn-primary btn-lg"
+            data-toggle="modal"
+            data-target="#myModal"
+          >
+            Launch demo modal
+          </button>
+          <div
+            className="modal fade"
+            id="myModal"
+            role="dialog"
+            aria-labelledby="myModalLabel"
+            aria-hidden="true"
+          >
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title" id="exampleModalLongTitle">
+                    Modal title
+                  </h5>
+                  <button
+                    type="button"
+                    className="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                  >
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div className="modal-body">
+                  <PostForm />
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-default"
+                    data-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
