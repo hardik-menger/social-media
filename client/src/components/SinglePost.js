@@ -1,11 +1,16 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
 import PostForm from "./forms/PostForm";
+import { groupPost } from "../actions/pageaction";
 class SinglePost extends Component {
   constructor(props) {
     super(props);
-    this.state = { profile_pic: "" };
+    this.state = {
+      profile_pic: "",
+      isChecked: false,
+      selectedArray: [],
+      added: false
+    };
   }
   componentDidMount() {
     fetch(
@@ -19,6 +24,10 @@ class SinglePost extends Component {
         this.setState({ profile_pic: data.url.toString() });
       })
       .catch(err => console.log(err));
+  }
+  toggleAdd(page) {
+    this.setState({ added: !this.state.added });
+    this.props.groupPost(page);
   }
   render() {
     return (
@@ -49,13 +58,27 @@ class SinglePost extends Component {
           >
             Go somewhere
           </Link> */}
+          <div className="checkbox">
+            <label>
+              <button
+                className={
+                  this.state.added
+                    ? "btn btn-success btn-sm"
+                    : "btn btn-primary btn-sm"
+                }
+                onClick={() => this.toggleAdd(this.props.page)}
+              >
+                {this.state.added ? "Added" : "Add"}
+              </button>
+            </label>
+          </div>
           <button
             type="button"
-            className="btn btn-primary btn-lg"
+            className="btn btn-primary btn-sm "
             data-toggle="modal"
             data-target="#myModal"
           >
-            Launch demo modal
+            Modal
           </button>
           <div
             className="modal fade"
@@ -100,9 +123,9 @@ class SinglePost extends Component {
   }
 }
 const mapStateToProps = state => {
-  return { auth: state.auth };
+  return { auth: state.auth, pageArray: state.pageArray };
 };
 export default connect(
   mapStateToProps,
-  null
+  { groupPost }
 )(SinglePost);

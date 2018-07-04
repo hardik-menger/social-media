@@ -20,3 +20,5 @@ export const PAGES_LOADING = "PAGES_LOADING";
 export const GET_PAGE = "GET_PAGE";
 export const GET_PAGES = "GET_PAGES";
 export const DELETE_PAGE = "DELETE_PAGE";
+export const ADD_TO_POSTARRAY = "ADD_TO_POSTARRAY";
+export const REMOVE_FROM_POSTARRAY = "REMOVE_FROM_POSTARRAY";

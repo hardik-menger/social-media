@@ -1,11 +1,4 @@
-import axios from "axios";
-import {
-  ADD_PAGE,
-  PAGES_LOADING,
-  GET_PAGE,
-  GET_PAGES,
-  DELETE_PAGE
-} from "./types";
+import { PAGES_LOADING, GET_PAGES, ADD_TO_POSTARRAY } from "./types";
 
 export const getpages = pages => {
   return {
@@ -13,6 +6,13 @@ export const getpages = pages => {
     payload: pages.data
   };
 };
+export const groupPost = set => {
+  return {
+    type: ADD_TO_POSTARRAY,
+    payload: set
+  };
+};
+
 export const getpost = id => dispatch => {};
 export const deletepost = id => dispatch => {};
 export const addlike = id => dispatch => {};

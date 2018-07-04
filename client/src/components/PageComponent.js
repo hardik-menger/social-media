@@ -22,11 +22,12 @@ class PageComponent extends Component {
       )
         .then(resp => resp.json()) // Transform the data into json
         .then(data => {
-          console.log(data.error === undefined);
+          console.log(data.error === undefined ? "success" : "failed");
           if (!data.error === undefined) {
             window.FB.login(
               response => {
                 if (response.authResponse) {
+                  console.log(response);
                   localStorage.getItem("auth", JSON.stringify(response));
                   this.props.loginuser(response);
                   this.statusChangeCallback();
@@ -35,6 +36,17 @@ class PageComponent extends Component {
               { return_scopes: true }
             );
           } else {
+            window.FB.login(
+              response => {
+                if (response.authResponse) {
+                  console.log(response);
+                  localStorage.getItem("auth", JSON.stringify(response));
+                  this.props.loginuser(response);
+                }
+              },
+              { return_scopes: true }
+            );
+            console.log("getting pages");
             this.props.getpages(data);
           }
         });
@@ -46,6 +58,7 @@ class PageComponent extends Component {
       this.setState({ isAuthenticated: false });
     }
   }
+
   render() {
     let pages;
     if (this.props.pages.pages) {
@@ -55,7 +68,7 @@ class PageComponent extends Component {
     } else {
       pages = "Loading";
     }
-    return <div style={{ display: "flex", flexWrap: "wrap" }}>{pages}</div>;
+    return <div style={{ display: "flex", flexWrap: "wrap" }}> {pages}</div>;
   }
 }
 const mapStateToProps = state => {
