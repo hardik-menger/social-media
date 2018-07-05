@@ -12,7 +12,6 @@ export const groupPost = set => {
     payload: set
   };
 };
-
 export const getpost = id => dispatch => {};
 export const deletepost = id => dispatch => {};
 export const addlike = id => dispatch => {};

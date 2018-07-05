@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { getpages, setpageloading } from "../actions/pageaction";
 import { loginuser } from "../actions/authaction";
 import SinglePost from "./SinglePost";
+import Spinner from "./common/spinner";
 class PageComponent extends Component {
   componentDidMount() {
     if (this.props.auth.isAuthenticated) {
@@ -22,51 +23,35 @@ class PageComponent extends Component {
       )
         .then(resp => resp.json()) // Transform the data into json
         .then(data => {
-          console.log(data.error === undefined ? "success" : "failed");
-          if (!data.error === undefined) {
-            window.FB.login(
-              response => {
-                if (response.authResponse) {
-                  console.log(response);
-                  localStorage.getItem("auth", JSON.stringify(response));
-                  this.props.loginuser(response);
-                  this.statusChangeCallback();
-                }
-              },
-              { return_scopes: true }
-            );
+          if (data.error === undefined) {
+            this.props.getpages(data);
           } else {
             window.FB.login(
               response => {
                 if (response.authResponse) {
-                  console.log(response);
-                  localStorage.getItem("auth", JSON.stringify(response));
                   this.props.loginuser(response);
                 }
               },
-              { return_scopes: true }
+              { scope: "manage_pages", return_scopes: true }
             );
-            console.log("getting pages");
             this.props.getpages(data);
           }
         });
     } else if (status === "not_authorized") {
       alert("Please log into this app.");
-      this.setState({ isAuthenticated: false });
     } else {
       alert("Please log into this facebook.");
-      this.setState({ isAuthenticated: false });
     }
   }
 
   render() {
     let pages;
-    if (this.props.pages.pages) {
+    if (!this.props.pages.loading) {
       pages = this.props.pages.pages.map(page => {
         return <SinglePost page={page} key={parseInt(page.id)} />;
       });
     } else {
-      pages = "Loading";
+      pages = <Spinner />;
     }
     return <div style={{ display: "flex", flexWrap: "wrap" }}> {pages}</div>;
   }

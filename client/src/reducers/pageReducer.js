@@ -4,10 +4,8 @@ import {
   GET_PAGE,
   GET_PAGES,
   DELETE_PAGE,
-  ADD_TO_POSTARRAY,
-  REMOVE_FROM_POSTARRAY
+  ADD_TO_POSTARRAY
 } from "../actions/types";
-import _ from "lodash";
 const initialState = {
   pages: [],
   pageArray: [],
@@ -35,13 +33,20 @@ export default (state = initialState, action) => {
       return { ...state, page: action.payload, loading: false };
     }
     case ADD_TO_POSTARRAY: {
-      //delete problem
-      let added = _.uniqBy([...state.pageArray, action.payload], "id");
-      added = _.remove(
-        added,
-        obj => parseInt(obj.id) === parseInt(action.payload.id)
+      var uniq = new Set(
+        [...state.pageArray, action.payload].map(e => JSON.stringify(e))
       );
-      console.log(added, action.payload.id);
+      var added = Array.from(uniq).map(e => JSON.parse(e));
+      if ([...state.pageArray, action.payload].length - uniq.size === 1) {
+        var removeIndex = added
+          .map(function(item) {
+            return item.id;
+          })
+          .indexOf(action.payload.id);
+
+        // remove object
+        added.splice(removeIndex, 1);
+      }
       return { ...state, pageArray: added };
     }
     default:

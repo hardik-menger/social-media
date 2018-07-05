@@ -73,7 +73,7 @@ class Navbar extends Component {
           this.props.loginuser(response);
         }
       },
-      { return_scopes: true }
+      { scope: "manage_pages", return_scopes: true }
     );
   };
 
