@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import PostForm from "./forms/PostForm";
 import { groupPost } from "../actions/pageaction";
-import { Link } from "react-router-dom";
 class SinglePost extends Component {
   constructor(props) {
     super(props);
@@ -17,9 +16,7 @@ class SinglePost extends Component {
     fetch(
       `https://graph.facebook.com/v3.0/${
         this.props.page.id
-      }/picture?access_token=${
-        this.props.auth.user.authResponse.accessToken
-      }&type=large&width=300`
+      }/picture?type=large&width=300`
     )
       .then(data => {
         this.setState({ profile_pic: data.url.toString() });
