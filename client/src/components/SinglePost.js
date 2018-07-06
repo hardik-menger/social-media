@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import PostForm from "./forms/PostForm";
 import { groupPost } from "../actions/pageaction";
+import { Link } from "react-router-dom";
 class SinglePost extends Component {
   constructor(props) {
     super(props);
@@ -57,7 +58,7 @@ class SinglePost extends Component {
             className="btn btn-primary"
           >
             Go somewhere
-          </Link> */}
+           */}
           <div className="checkbox">
             <label>
               <button

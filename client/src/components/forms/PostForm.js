@@ -16,33 +16,38 @@ class PostForm extends Component {
     const userData = {
       post: this.state.post
     };
-    console.log(userData);
+    this.props.pages.pageArray.length === 0
+      ? alert("Please select atleast one page")
+      : this.props.pages.pageArray.map(post =>
+          window.FB.getLoginStatus(response => {
+            if (response.status === "connected") {
+              window.FB.api(
+                "/" + post.id + "/feed",
+                "post",
+                {
+                  message: userData.post,
+                  access_token: post.access_token
+                },
+                res => {
+                  if (!res || res.error) {
+                    console.log(res);
+                    alert("Error occured");
+                  } else {
+                    console.log("Post ", res);
+                  }
+                }
+              );
+            } else {
+              alert("Post Unsuccessfull Login again");
+            }
+          })
+        );
   }
   onChange(e) {
     this.setState({ [e.target.name]: e.target.value });
   }
   componentDidMount() {}
-  // postToPage = () => {
-  //   window.FB.getLoginStatus(
-  //     function(response) {
-  //       if (response.status === "connected") {
-  //         window.FB.api(
-  //           "/" + this.props.match.params.pageid + "/feed",
-  //           "post",
-  //           {
-  //             message: "test 2",
-  //             access_token: this.props.match.params.accesstoken
-  //           },
-  //           res => {
-  //             console.log(res);
-  //           }
-  //         );
-  //       } else {
-  //         alert("Login Unsuccessfull");
-  //       }
-  //     }.bind(this)
-  //   );
-  // };
+
   render() {
     const { errors } = this.state;
     return (

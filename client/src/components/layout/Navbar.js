@@ -73,7 +73,11 @@ class Navbar extends Component {
           this.props.loginuser(response);
         }
       },
-      { scope: "manage_pages", return_scopes: true }
+      {
+        scope: "manage_pages",
+        return_scopes: true,
+        enable_profile_selector: true
+      }
     );
   };
 
