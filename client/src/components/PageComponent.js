@@ -3,14 +3,14 @@ import { connect } from "react-redux";
 import { getpages, setpageloading } from "../actions/pageaction";
 import { loginuser } from "../actions/authaction";
 import SinglePost from "./SinglePost";
+import PostForm from "./forms/PostForm";
 import Spinner from "./common/spinner";
+import loadFbLoginApi from "../FB/loadsdk";
 class PageComponent extends Component {
   componentDidMount() {
-    if (this.props.auth.isAuthenticated) {
+    Promise.resolve(loadFbLoginApi()).then(() => {
       this.statusChangeCallback();
-    } else {
-      alert("Please log in");
-    }
+    });
   }
   async statusChangeCallback() {
     const auth = JSON.parse(localStorage.getItem("auth"));
@@ -26,14 +26,11 @@ class PageComponent extends Component {
           if (data.error === undefined) {
             this.props.getpages(data);
           } else {
-            window.FB.login(
-              response => {
-                if (response.authResponse) {
-                  this.props.loginuser(response);
-                }
-              },
-              { scope: "manage_pages", return_scopes: true }
-            );
+            window.FB.login(response => {
+              if (response.authResponse) {
+                this.props.loginuser(response);
+              }
+            });
             this.props.getpages(data);
           }
         });
@@ -48,9 +45,10 @@ class PageComponent extends Component {
     //     window.FB.api("me/accounts", "get", res => {
     //       if (!res || res.error) {
     //         console.log(res);
-    //         alert("Error occured");
+    //         alert("Error occured", res);
     //       } else {
-    //         console.log("pages ", res);
+    //         console.log(res.data);
+    //         this.props.loginuser(res.data);
     //       }
     //     });
     //   } else {
@@ -61,14 +59,69 @@ class PageComponent extends Component {
 
   render() {
     let pages;
-    if (!this.props.pages.loading) {
+    if (this.props.pages.pages) {
       pages = this.props.pages.pages.map(page => {
-        return <SinglePost page={page} key={parseInt(page.id)} />;
+        return (
+          <div>
+            <SinglePost page={page} key={parseInt(page.id)} />
+          </div>
+        );
       });
     } else {
       pages = <Spinner />;
     }
-    return <div style={{ display: "flex", flexWrap: "wrap" }}> {pages}</div>;
+    return (
+      <div>
+        <div style={{ display: "flex", flexWrap: "wrap" }}> {pages}</div>
+        <div className="d-flex justify-content-end">
+          <button
+            type="button"
+            className="btn btn-success btn-md "
+            data-toggle="modal"
+            data-target="#myModal"
+          >
+            Post To Pages
+          </button>
+        </div>
+        <div
+          className="modal fade"
+          id="myModal"
+          role="dialog"
+          aria-labelledby="myModalLabel"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLongTitle">
+                  Modal title
+                </h5>
+                <button
+                  type="button"
+                  className="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div className="modal-body">
+                <PostForm />
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-default"
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 }
 const mapStateToProps = state => {

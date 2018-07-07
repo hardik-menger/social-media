@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import PostForm from "./forms/PostForm";
 import { groupPost } from "../actions/pageaction";
 class SinglePost extends Component {
   constructor(props) {
@@ -31,11 +30,12 @@ class SinglePost extends Component {
     return (
       <div
         className="card"
-        style={{ width: "280px", height: "450px", margin: "10px" }}
+        style={{ width: "280px", height: "250px", margin: "10px" }}
       >
         <div
           style={{
             height: "150px",
+            backgroundRepeat: "none",
             backgroundImage: `url(${this.state.profile_pic})`,
             backgroundPosition: `center`
           }}
@@ -44,18 +44,7 @@ class SinglePost extends Component {
           <h5 className="card-title">
             {this.props.page.global_brand_page_name || "No title"}
           </h5>
-          <p className="card-text">
-            {this.props.page.about || "No Description"}
-          </p>
-          {/* <Link
-            to={
-              "/page/" + this.props.page.id + "/" + this.props.page.access_token
-            }
-            params={{ id: this.props.page.id }}
-            className="btn btn-primary"
-          >
-            Go somewhere
-           */}
+          <p className="card-text">{this.props.page.category}</p>
           <div className="checkbox">
             <label>
               <button
@@ -69,51 +58,6 @@ class SinglePost extends Component {
                 {this.state.added ? "Added" : "Add"}
               </button>
             </label>
-          </div>
-          <button
-            type="button"
-            className="btn btn-primary btn-sm "
-            data-toggle="modal"
-            data-target="#myModal"
-          >
-            Modal
-          </button>
-          <div
-            className="modal fade"
-            id="myModal"
-            role="dialog"
-            aria-labelledby="myModalLabel"
-            aria-hidden="true"
-          >
-            <div className="modal-dialog">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title" id="exampleModalLongTitle">
-                    Modal title
-                  </h5>
-                  <button
-                    type="button"
-                    className="close"
-                    data-dismiss="modal"
-                    aria-label="Close"
-                  >
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div className="modal-body">
-                  <PostForm />
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-default"
-                    data-dismiss="modal"
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
