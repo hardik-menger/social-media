@@ -29,18 +29,20 @@ class SinglePost extends Component {
   render() {
     return (
       <div
-        className="card"
-        style={{ width: "280px", height: "250px", margin: "10px" }}
+        className="card text-center"
+        style={{ width: "200px", height: "250px", margin: "10px" }}
       >
         <div
           style={{
+            marginTop: "10px",
             height: "150px",
             backgroundRepeat: "none",
             backgroundImage: `url(${this.state.profile_pic})`,
-            backgroundPosition: `center`
+            backgroundPosition: `center`,
+            backgroundSize: "70%"
           }}
         />
-        <div className="card-body">
+        <div className="card-body" style={{ padding: "5px" }}>
           <h5 className="card-title">
             {this.props.page.global_brand_page_name || "No title"}
           </h5>

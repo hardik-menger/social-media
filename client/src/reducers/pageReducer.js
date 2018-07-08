@@ -4,7 +4,8 @@ import {
   GET_PAGE,
   GET_PAGES,
   DELETE_PAGE,
-  ADD_TO_POSTARRAY
+  ADD_TO_POSTARRAY,
+  ADD_ALL_TO_POSTARRAY
 } from "../actions/types";
 const initialState = {
   pages: [],
@@ -48,6 +49,9 @@ export default (state = initialState, action) => {
         added.splice(removeIndex, 1);
       }
       return { ...state, pageArray: added };
+    }
+    case ADD_ALL_TO_POSTARRAY: {
+      return { ...state, pageArray: [...action.payload] };
     }
     default:
       return state;

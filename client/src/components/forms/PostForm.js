@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import axios from "axios";
 class PostForm extends Component {
   constructor(props) {
     super(props);
@@ -200,9 +199,9 @@ class PostForm extends Component {
         // data.append("access_token", "window.FB.getAccessToken()");
         // data.append("source", blob);
         // data.append("message", "try 3");
-        var access_token = this.props.auth.axios;
-        var source = blob;
-        var message = "try 3";
+        // var access_token = this.props.auth.axios;
+        // var source = blob;
+        // var message = "try 3";
         var wallPost = {
           message: "Test to post a photo",
           src: blob,
@@ -210,7 +209,7 @@ class PostForm extends Component {
         };
         window.FB.api(`/me/feed`, "post", wallPost, function(response) {
           if (!response || response.error) {
-            console.log("Failure! ", response);
+            console.log("Failure! ", response.error.message);
           } else {
             alert("Success! Post ID: " + response);
           }
