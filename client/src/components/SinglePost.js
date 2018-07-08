@@ -26,6 +26,17 @@ class SinglePost extends Component {
     this.setState({ added: !this.state.added });
     this.props.groupPost(page);
   }
+  findIfAlreadyAdded(pageid) {
+    if (
+      this.props.pages.pageArray.filter(
+        page => parseInt(page.id, 10) === pageid
+      ).length > 0
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
   render() {
     return (
       <div
@@ -51,13 +62,15 @@ class SinglePost extends Component {
             <label>
               <button
                 className={
-                  this.state.added
+                  this.findIfAlreadyAdded(parseInt(this.props.page.id, 10))
                     ? "btn btn-success btn-sm"
                     : "btn btn-primary btn-sm"
                 }
                 onClick={() => this.toggleAdd(this.props.page)}
               >
-                {this.state.added ? "Added" : "Add"}
+                {this.findIfAlreadyAdded(parseInt(this.props.page.id, 10))
+                  ? "Added"
+                  : "Add"}
               </button>
             </label>
           </div>
@@ -67,7 +80,7 @@ class SinglePost extends Component {
   }
 }
 const mapStateToProps = state => {
-  return { auth: state.auth, pageArray: state.pageArray };
+  return { auth: state.auth, pages: state.pages };
 };
 export default connect(
   mapStateToProps,

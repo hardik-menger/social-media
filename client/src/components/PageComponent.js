@@ -11,6 +11,9 @@ class PageComponent extends Component {
   constructor() {
     super();
     this.addedAll = false;
+    this.state = {
+      pages: []
+    };
   }
   addedAll;
   componentDidMount() {
@@ -63,6 +66,31 @@ class PageComponent extends Component {
     //   }
     // });
   }
+  sorting = type => {
+    switch (type) {
+      case "asc":
+        console.log("asc");
+        return this.props.pages.pages.sort((a, b) => {
+          var nameA = a.global_brand_page_name.toLowerCase(),
+            nameB = b.global_brand_page_name.toLowerCase();
+          if (nameA < nameB) return -1;
+          if (nameA > nameB) return 1;
+          return 0; //default return value (no sorting)
+        });
+      case "desc":
+        console.log("desc");
+        return this.props.pages.pages.sort((a, b) => {
+          var nameA = a.global_brand_page_name.toLowerCase(),
+            nameB = b.global_brand_page_name.toLowerCase();
+          if (nameA > nameB) return -1;
+          if (nameA < nameB) return 1;
+          return 0;
+        });
+      default:
+        console.log("default");
+        return this.props.pages.pages;
+    }
+  };
   addAll = () => {
     this.props.groupPostToAll(this.props.pages.pages);
   };
@@ -82,20 +110,50 @@ class PageComponent extends Component {
       width: "100%",
       margin: "0px"
     };
+
     let pages;
-    if (this.props.pages.pages) {
-      pages = this.props.pages.pages.map((page, index) => {
-        return (
-          <div>
-            <SinglePost page={page} key={index} />
-          </div>
-        );
+    let loaded = true;
+    this.setState({ pages: this.props.pages.pages });
+    if (this.props.pages.pages && loaded) {
+      loaded = false;
+      console.log(this.state.pages);
+      pages = this.state.pages.map((page, index) => {
+        return <SinglePost page={page} key={index} />;
       });
     } else {
       pages = <Spinner />;
     }
+
     return (
       <div>
+        <div className="dropdown show">
+          <p
+            className="btn btn-sm dropdown-toggle "
+            role="button"
+            id="dropdownMenuLink"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            Sort
+          </p>
+          <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            <p
+              className="dropdown-item ml-2 "
+              onClick={() => (pages = this.sorting("asc"))}
+              style={{ padding: "0" }}
+            >
+              A-Z
+            </p>
+            <p
+              className="dropdown-item ml-2"
+              onClick={() => (pages = this.sorting("desc"))}
+              style={{ margin: "0", padding: "0" }}
+            >
+              Z-A
+            </p>
+          </div>
+        </div>
         <div style={{ display: "flex", flexWrap: "wrap" }}> {pages}</div>
         <div className="d-flex justify-content-end">
           <button
