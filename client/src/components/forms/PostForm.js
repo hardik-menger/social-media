@@ -1,48 +1,89 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import Datetime from "react-datetime";
+import "../common/datepicker.css";
 class PostForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
       post: "",
       errors: {},
-      image: ""
+      image: "",
+      checked: false,
+      date: ""
     };
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
   }
+
+  handleChange = () => {
+    this.setState({
+      checked: !this.state.checked
+    });
+  };
+  onCheck = date => {
+    this.setState({ date: new Date(date._d).getTime() / 1000 });
+  };
   onSubmit(e) {
     e.preventDefault();
 
     const userData = {
       post: this.state.post
     };
-    this.props.pages.pageArray.length === 0
-      ? alert("Please select atleast one page")
-      : this.props.pages.pageArray.map(post =>
-          window.FB.getLoginStatus(response => {
-            if (response.status === "connected") {
-              window.FB.api(
-                "/" + post.id + "/feed",
-                "post",
-                {
-                  message: userData.post,
-                  access_token: post.access_token
-                },
-                res => {
-                  if (!res || res.error) {
-                    console.log(res);
-                    alert("Error occured");
-                  } else {
-                    console.log("Post ", res);
-                  }
+    //the user has a delayed post
+    if (!this.state.checked) {
+      this.props.pages.pageArray.map(post =>
+        window.FB.getLoginStatus(response => {
+          if (response.status === "connected") {
+            window.FB.api(
+              "/" + post.id + "/feed",
+              "post",
+              {
+                message: userData.post,
+                access_token: post.access_token
+              },
+              res => {
+                if (!res || res.error) {
+                  console.log(res);
+                  alert("Error occured");
+                } else {
+                  console.log("Post ", res);
                 }
-              );
-            } else {
-              alert("Post Unsuccessfull Login again");
-            }
-          })
-        );
+              }
+            );
+          } else {
+            alert("Post Unsuccessfull Login again");
+          }
+        })
+      );
+    } else {
+      this.props.pages.pageArray.map(post =>
+        window.FB.getLoginStatus(response => {
+          if (response.status === "connected") {
+            window.FB.api(
+              "/" + post.id + "/feed",
+              "post",
+              {
+                message: userData.post,
+                scheduled_publish_time: this.state.date,
+                published: false,
+                access_token: post.access_token
+              },
+              res => {
+                if (!res || res.error) {
+                  console.log(res);
+                  alert("Error occured");
+                } else {
+                  console.log("Post ", res);
+                }
+              }
+            );
+          } else {
+            alert("Post Unsuccessfull Login again");
+          }
+        })
+      );
+    }
   }
   onChange(e) {
     this.setState({ [e.target.name]: e.target.value });
@@ -219,6 +260,10 @@ class PostForm extends Component {
     }
   };
   render() {
+    // const handleDate = date => {
+    //   console.log(new Date(date._d.valueOf()).toISOString());
+    //   this.setState({ date: new Date(date._d.valueOf()).toISOString() });
+    // };
     const { errors } = this.state;
     const fileInput = {
       border: "1px solid #ccc",
@@ -226,6 +271,21 @@ class PostForm extends Component {
       padding: "6px 12px",
       cursor: "pointer"
     };
+    const dateinput = this.state.checked ? (
+      <div>
+        {" "}
+        <div
+          className="modal-footer d-flex justify-content-center"
+          style={{ width: "100%" }}
+        >
+          <Datetime
+            onChange={this.onCheck}
+            inputProps={{ placeholder: "Click here to set time duration" }}
+          />
+        </div>
+      </div>
+    ) : null;
+
     return (
       <div>
         <form onSubmit={this.onSubmit}>
@@ -250,21 +310,36 @@ class PostForm extends Component {
               name="post"
             />
           </div>
+
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-end",
               padding: "1rem",
               borderTop: "1px solid #e9ecef"
             }}
+            className="d-flex justify-content-between align-items-center"
           >
+            <div>
+              <label className="text-muted mr-2">
+                Check this to schedule this post
+              </label>
+              <input
+                className="align-self-end"
+                type="checkbox"
+                checked={this.state.checked}
+                onChange={this.handleChange}
+              />
+            </div>
+
             <button type="submit" className="btn btn-outline-primary ">
               Post
             </button>
-            <label style={{ fileInput }}>
-              Upload
+            <label style={{ fileInput }} htmlFor="file">
+              <i
+                className="fas fa-paperclip mt-3 ml-4"
+                style={{ fontSize: "27px", color: "darkgray" }}
+              />
               <input
+                style={{ display: "none" }}
                 ref="file"
                 type="file"
                 name="file"
@@ -274,11 +349,9 @@ class PostForm extends Component {
                 encType="multipart/form-data"
               />
             </label>
-            {/* <button type="button" onClick={this.uploadImageToPage}>
-              upload
-            </button> */}
           </div>
         </form>
+        {dateinput}
       </div>
     );
   }

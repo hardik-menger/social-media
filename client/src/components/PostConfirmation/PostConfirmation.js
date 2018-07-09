@@ -29,14 +29,14 @@ class PostConfirmation extends Component {
         <ul className="list-group list-group-flush ">{list}</ul>
         <button
           type="button"
-          className="btn btn-success btn-md "
+          className="btn btn btn-outline-success btn-md m-4"
           data-toggle="modal"
           data-target="#postform"
         >
           Post To Pages
         </button>
         <div
-          className="modal fade"
+          className="modal fade "
           id="postform"
           role="dialog"
           aria-labelledby="myModalLabel"

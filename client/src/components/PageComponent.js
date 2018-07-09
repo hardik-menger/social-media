@@ -7,13 +7,12 @@ import Spinner from "./common/spinner";
 import loadFbLoginApi from "../FB/loadsdk";
 import PostConfirmation from "./PostConfirmation/PostConfirmation";
 import { groupPostToAll } from "../actions/pageaction";
+import "./materialInput.css";
 class PageComponent extends Component {
   constructor() {
     super();
     this.addedAll = false;
-    this.state = {
-      pages: []
-    };
+    this.state = { sortby: "1", search: "" };
   }
   addedAll;
   componentDidMount() {
@@ -23,7 +22,7 @@ class PageComponent extends Component {
   }
   async statusChangeCallback() {
     const auth = JSON.parse(localStorage.getItem("auth"));
-    const { accessToken } = auth.authResponse;
+    const { accessToken } = this.props.auth.user.authResponse;
     const { status } = auth;
     if (status === "connected") {
       this.props.setpageloading();
@@ -66,19 +65,23 @@ class PageComponent extends Component {
     //   }
     // });
   }
-  sorting = type => {
+  onChange = e => {
+    this.setState({ [e.target.name]: e.target.value, sortby: "search" });
+  };
+  addAll = () => {
+    this.props.groupPostToAll(this.props.pages.pages);
+  };
+  searchAndSort = type => {
     switch (type) {
       case "asc":
-        console.log("asc");
         return this.props.pages.pages.sort((a, b) => {
           var nameA = a.global_brand_page_name.toLowerCase(),
             nameB = b.global_brand_page_name.toLowerCase();
           if (nameA < nameB) return -1;
           if (nameA > nameB) return 1;
-          return 0; //default return value (no sorting)
+          return 0;
         });
       case "desc":
-        console.log("desc");
         return this.props.pages.pages.sort((a, b) => {
           var nameA = a.global_brand_page_name.toLowerCase(),
             nameB = b.global_brand_page_name.toLowerCase();
@@ -86,13 +89,20 @@ class PageComponent extends Component {
           if (nameA < nameB) return 1;
           return 0;
         });
+      case "search":
+        let searched;
+        searched = this.props.pages.pages.filter(obj => {
+          return (
+            obj.global_brand_page_name
+              .toLowerCase()
+              .indexOf(this.state.search.toLowerCase()) !== -1
+          );
+        });
+        return searched;
+
       default:
-        console.log("default");
         return this.props.pages.pages;
     }
-  };
-  addAll = () => {
-    this.props.groupPostToAll(this.props.pages.pages);
   };
   render() {
     const modalDialog = {
@@ -110,14 +120,14 @@ class PageComponent extends Component {
       width: "100%",
       margin: "0px"
     };
-
+    const nopadding = {
+      padding: "0px !important"
+    };
     let pages;
-    let loaded = true;
-    this.setState({ pages: this.props.pages.pages });
-    if (this.props.pages.pages && loaded) {
-      loaded = false;
-      console.log(this.state.pages);
-      pages = this.state.pages.map((page, index) => {
+
+    if (this.props.pages.pages) {
+      let fetchedPages = this.searchAndSort(this.state.sortby);
+      pages = fetchedPages.map((page, index) => {
         return <SinglePost page={page} key={index} />;
       });
     } else {
@@ -126,32 +136,47 @@ class PageComponent extends Component {
 
     return (
       <div>
-        <div className="dropdown show">
-          <p
-            className="btn btn-sm dropdown-toggle "
-            role="button"
-            id="dropdownMenuLink"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >
-            Sort
-          </p>
-          <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+        <div className="d-flex justify-content-between">
+          <div className="dropdown show">
             <p
-              className="dropdown-item ml-2 "
-              onClick={() => (pages = this.sorting("asc"))}
-              style={{ padding: "0" }}
+              className="btn btn-sm dropdown-toggle "
+              role="button"
+              id="dropdownMenuLink"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
             >
-              A-Z
+              Sort
             </p>
-            <p
-              className="dropdown-item ml-2"
-              onClick={() => (pages = this.sorting("desc"))}
-              style={{ margin: "0", padding: "0" }}
-            >
-              Z-A
-            </p>
+            <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+              <p
+                className="dropdown-item ml-2 "
+                onClick={() => this.setState({ sortby: "asc" })}
+                style={{ padding: "0" }}
+              >
+                A-Z
+              </p>
+              <p
+                className="dropdown-item ml-2"
+                style={{ margin: "0", padding: "0" }}
+                onClick={() => this.setState({ sortby: "desc" })}
+              >
+                Z-A
+              </p>
+            </div>
+          </div>
+
+          <div className="group">
+            <input
+              type="search"
+              value={this.state.post}
+              onChange={this.onChange}
+              name="search"
+              required
+            />
+            <span className="highlight" />
+            <span className="bar" />
+            <label className="materiallabel">Search</label>
           </div>
         </div>
         <div style={{ display: "flex", flexWrap: "wrap" }}> {pages}</div>
@@ -176,7 +201,7 @@ class PageComponent extends Component {
           </button>
         </div>
         <div
-          className="modal fade"
+          className="modal fade nopadding"
           id="myModal"
           role="dialog"
           aria-labelledby="myModalLabel"
