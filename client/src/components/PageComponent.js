@@ -37,7 +37,7 @@ class PageComponent extends Component {
             window.FB.login(response => {
               if (response.authResponse) {
                 this.props.loginuser(response);
-                this.props.getpages(data);
+                this.statusChangeCallback();
               }
             });
             this.props.getpages(data);
@@ -120,9 +120,6 @@ class PageComponent extends Component {
       width: "100%",
       margin: "0px"
     };
-    const nopadding = {
-      padding: "0px !important"
-    };
     let pages;
 
     if (this.props.pages.pages) {
@@ -149,20 +146,20 @@ class PageComponent extends Component {
               Sort
             </p>
             <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <p
+              <li
                 className="dropdown-item ml-2 "
                 onClick={() => this.setState({ sortby: "asc" })}
                 style={{ padding: "0" }}
               >
                 A-Z
-              </p>
-              <p
+              </li>
+              <li
                 className="dropdown-item ml-2"
                 style={{ margin: "0", padding: "0" }}
                 onClick={() => this.setState({ sortby: "desc" })}
               >
                 Z-A
-              </p>
+              </li>
             </div>
           </div>
 

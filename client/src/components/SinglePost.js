@@ -38,10 +38,20 @@ class SinglePost extends Component {
     }
   }
   render() {
+    const add = (
+      <span>
+        Add <i className="fas fa-plus" />
+      </span>
+    );
+    const added = (
+      <span>
+        Added <i className="fas fa-minus" />
+      </span>
+    );
     return (
       <div
         className="card text-center"
-        style={{ width: "200px", height: "250px", margin: "10px" }}
+        style={{ width: "200px", margin: "10px" }}
       >
         <div
           style={{
@@ -50,7 +60,7 @@ class SinglePost extends Component {
             backgroundRepeat: "none",
             backgroundImage: `url(${this.state.profile_pic})`,
             backgroundPosition: `center`,
-            backgroundSize: "70%"
+            backgroundSize: "100%"
           }}
         />
         <div className="card-body" style={{ padding: "5px" }}>
@@ -69,8 +79,8 @@ class SinglePost extends Component {
                 onClick={() => this.toggleAdd(this.props.page)}
               >
                 {this.findIfAlreadyAdded(parseInt(this.props.page.id, 10))
-                  ? "Added"
-                  : "Add"}
+                  ? added
+                  : add}
               </button>
             </label>
           </div>

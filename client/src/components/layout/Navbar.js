@@ -66,7 +66,9 @@ class Navbar extends Component {
       <ul className="navbar-nav ml-auto">
         <li className="nav-item">
           <Link to="/" className="nav-link" onClick={this.onlogout}>
-            Logout
+            <span>
+              Logout <i className="fas fa-sign-out-alt" />
+            </span>
           </Link>
         </li>
       </ul>
@@ -75,7 +77,9 @@ class Navbar extends Component {
       <ul className="navbar-nav ml-auto">
         <li className="nav-item">
           <Link to="/" className="nav-link" onClick={this.handleFBLogin}>
-            Login
+            <span>
+              Login <i className="fas fa-sign-in-alt" />
+            </span>
           </Link>
         </li>
       </ul>
