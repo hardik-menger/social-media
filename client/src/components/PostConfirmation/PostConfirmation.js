@@ -3,9 +3,12 @@ import { connect } from "react-redux";
 import { groupPost } from "../../actions/pageaction";
 import PostForm from "../forms/PostForm";
 class PostConfirmation extends Component {
+  closePopUp = () => {
+    document.getElementById("close").click();
+  };
   removeFromList = page => {
-    console.log(page);
     this.props.groupPost(page);
+    if (this.props.pages.pageArray.length === 1) this.closePopUp();
   };
   render() {
     let list;
@@ -63,8 +66,9 @@ class PostConfirmation extends Component {
               <div className="modal-footer">
                 <button
                   type="button"
-                  className="btn btn-default"
+                  className="btn btn-default closeform"
                   data-dismiss="modal"
+                  id="close"
                 >
                   Close
                 </button>

@@ -193,6 +193,7 @@ class PageComponent extends Component {
             className="btn btn-info btn-md "
             data-toggle="modal"
             data-target="#myModal"
+            disabled={this.props.pages.pageArray.length === 0}
           >
             Confirm Pages
           </button>
@@ -218,6 +219,7 @@ class PageComponent extends Component {
                   className="close"
                   data-dismiss="modal"
                   aria-label="Close"
+                  id="close"
                 >
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -228,8 +230,9 @@ class PageComponent extends Component {
               <div className="modal-footer">
                 <button
                   type="button"
-                  className="btn btn-default"
+                  className="btn btn-default closeconform"
                   data-dismiss="modal"
+                  id="close"
                 >
                   Close
                 </button>

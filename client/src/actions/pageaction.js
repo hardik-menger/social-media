@@ -23,9 +23,6 @@ export const groupPostToAll = pages => {
     payload: pages
   };
 };
-export const getpost = id => dispatch => {};
-export const deletepost = id => dispatch => {};
-export const addlike = id => dispatch => {};
 export const setpageloading = () => {
   return { type: PAGES_LOADING };
 };

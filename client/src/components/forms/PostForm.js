@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import Datetime from "react-datetime";
 import "../common/datepicker.css";
+import { withRouter } from "react-router-dom";
 class PostForm extends Component {
   constructor(props) {
     super(props);
@@ -25,11 +26,13 @@ class PostForm extends Component {
     this.setState({ date: new Date(date._d).getTime() / 1000 });
   };
   onSubmit(e) {
+    let submitted = false;
     e.preventDefault();
 
     const userData = {
       post: this.state.post
     };
+
     if (!this.state.checked && this.state.image === null) {
       this.props.pages.pageArray.map(post =>
         window.FB.getLoginStatus(response => {
@@ -43,13 +46,15 @@ class PostForm extends Component {
               },
               res => {
                 if (!res || res.error) {
-                  console.log(res);
-                  alert("Error occured");
+                  alert(res.error.message);
                 } else {
-                  console.log("Post ", res);
+                  this.props.history.push("/");
+                  document.getElementsByClassName("fade")[0].style.opacity =
+                    "1";
                 }
               }
             );
+            alert("Post Unsuccessfull");
           } else {
             alert("Post Unsuccessfull Login again");
           }
@@ -67,44 +72,57 @@ class PostForm extends Component {
                 src: this.state.image,
                 access_token: this.props.auth.user.authResponse.accessToken
               },
-              function(response) {
+              response => {
                 if (!response || response.error) {
                   console.log("Failure! ", response.error.message);
                 } else {
-                  alert("Success! Post ID: " + response);
+                  this.props.history.push("/");
+                  document.getElementsByClassName("fade")[0].style.opacity =
+                    "1";
                 }
               }
             );
           }
         })
       );
+      alert("Post Unsuccessfull");
     } else {
-      this.props.pages.pageArray.map(post =>
-        window.FB.getLoginStatus(response => {
-          if (response.status === "connected") {
-            window.FB.api(
-              "/" + post.id + "/feed",
-              "post",
-              {
-                message: userData.post,
-                scheduled_publish_time: this.state.date,
-                published: false,
-                access_token: post.access_token
-              },
-              res => {
-                if (!res || res.error) {
-                  console.log(res);
-                  alert("Error occured");
-                } else {
-                  console.log("Post ", res);
+      if (this.state.date.length === 0) {
+        alert("Select time duration or uncheck the checkbox");
+      } else {
+        this.props.pages.pageArray.map(post =>
+          window.FB.getLoginStatus(response => {
+            if (response.status === "connected") {
+              window.FB.api(
+                "/" + post.id + "/feed",
+                "post",
+                {
+                  message: userData.post,
+                  scheduled_publish_time: this.state.date,
+                  published: false,
+                  access_token: post.access_token
+                },
+                res => {
+                  if (!res || res.error) {
+                    alert("Error occured");
+                  } else {
+                    this.props.history.push("/");
+                    document.getElementsByClassName("fade")[0].style.opacity =
+                      "1";
+                  }
                 }
-              }
-            );
-          } else {
-            alert("Post Unsuccessfull Login again");
-          }
-        })
-      );
+              );
+              alert("Post Unsuccessfull");
+            } else {
+              alert("Post Unsuccessfull Login again");
+            }
+          })
+        );
+      }
+    }
+    if (submitted) {
+      this.closePopUp();
+      this.closeconform();
     }
   }
   onChange(e) {
@@ -123,14 +141,14 @@ class PostForm extends Component {
     if (file) {
       var reader = new FileReader();
       reader.onload = e => {
-        var arrayBuffer = e.target.result;
-        var blob = new Blob([arrayBuffer], { type: file.type });
+        var idarrayBuffer = e.target.result;
+        var blob = new Blob([idarrayBuffer], { type: file.type });
 
         this.blobToDataURL(blob, data => {
           this.setState({ image: data });
         });
       };
-      reader.readAsArrayBuffer(file);
+      reader.readAsidArrayBuffer(file);
     }
   };
   render() {
@@ -232,4 +250,4 @@ const mapStateToProps = state => {
 export default connect(
   mapStateToProps,
   null
-)(PostForm);
+)(withRouter(PostForm));

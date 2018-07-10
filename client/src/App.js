@@ -8,6 +8,7 @@ import { Provider } from "react-redux";
 import store from "./store";
 import PostForm from "./components/forms/PostForm";
 import PrivateRoute from "./components/common/PrivateRoute";
+import PrivacyPolicy from "./components/layout/privacy-policy";
 class App extends Component {
   render() {
     return (
@@ -30,6 +31,7 @@ class App extends Component {
                   />
                 </Switch>
                 <Route exact path="/" component={Landing} />
+                <Route exact path="/privacy-policy" component={PrivacyPolicy} />
               </div>
               <Footer />
             </div>
