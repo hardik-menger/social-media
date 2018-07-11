@@ -48,22 +48,6 @@ class PageComponent extends Component {
     } else {
       alert("Please log into this facebook.");
     }
-
-    // window.FB.getLoginStatus(response => {
-    //   if (response.status === "connected") {
-    //     window.FB.api("me/accounts", "get", res => {
-    //       if (!res || res.error) {
-    //         console.log(res);
-    //         alert("Error occured", res);
-    //       } else {
-    //         console.log(res.data);
-    //         this.props.loginuser(res.data);
-    //       }
-    //     });
-    //   } else {
-    //     alert("Post Unsuccessfull Login again");
-    //   }
-    // });
   }
   onChange = e => {
     this.setState({ [e.target.name]: e.target.value, sortby: "search" });
