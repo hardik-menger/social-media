@@ -52,13 +52,7 @@ export default () => {
             <h5>Legal</h5>
             <ul>
               <li>
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://termsfeed.com/terms-conditions/aa26d9fd1fbfd9a1d087fe8f747a3fb4"
-                >
-                  Terms of Service
-                </a>
+                <Link to="/terms-of-service">Terms of Service</Link>
               </li>
               <li>
                 <Link to="/privacy-policy">Privacy Policy</Link>
