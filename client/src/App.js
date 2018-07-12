@@ -18,16 +18,10 @@ class App extends Component {
               <Navbar />
               <div className="container">
                 <Switch>
-                  {" "}
                   <PrivateRoute exact path="/pages" component={Page} />
                 </Switch>
                 <Switch>
-                  {" "}
-                  <PrivateRoute
-                    exact
-                    path="/page/:pageid/:accesstoken"
-                    component={PostForm}
-                  />
+                  <PrivateRoute exact path="/post" component={PostForm} />
                 </Switch>
                 <Route exact path="/" component={Landing} />
               </div>

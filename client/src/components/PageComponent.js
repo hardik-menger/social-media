@@ -216,7 +216,7 @@ class PageComponent extends Component {
                   type="button"
                   className="btn btn-default closeconform"
                   data-dismiss="modal"
-                  id="close"
+                  id="signin"
                 >
                   Close
                 </button>

@@ -135,7 +135,7 @@ class PostForm extends Component {
     };
     a.readAsDataURL(blob);
   }
-  imageuploadtrythree = e => {
+  imageupload = e => {
     e.preventDefault();
     var file = this.refs.file.files[0];
     if (file) {
@@ -148,7 +148,7 @@ class PostForm extends Component {
           this.setState({ image: data });
         });
       };
-      reader.readAsidArrayBuffer(file);
+      reader.readAsArrayBuffer(file);
     }
   };
   render() {
@@ -163,7 +163,7 @@ class PostForm extends Component {
       <div>
         {" "}
         <div
-          className="modal-footer d-flex justify-content-center"
+          className=" d-flex justify-content-center"
           style={{ width: "100%" }}
         >
           <Datetime
@@ -173,9 +173,43 @@ class PostForm extends Component {
         </div>
       </div>
     ) : null;
+    let selectedfile;
+    selectedfile =
+      this.state.image !== null ? (
+        <div className="card mt-4">
+          <div className="card-header">Selected File</div>
+          <div className="card-body">
+            <div className="d-flex justify-content-around ">
+              <div>
+                <img
+                  className="pr-4"
+                  src={this.state.image}
+                  alt="Selected File"
+                  height="50"
+                />
+              </div>{" "}
+              <div className="ml-4 d-flex justify-content-around align-items-center">
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary"
+                  onClick={() => this.setState({ image: null })}
+                >
+                  <i className="fas fa-times" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        (selectedfile = <div />)
+      );
 
     return (
-      <div>
+      <div
+        style={{
+          height: "55vh"
+        }}
+      >
         <form onSubmit={this.onSubmit}>
           <div className="input-group">
             <div className="input-group-prepend">
@@ -210,6 +244,7 @@ class PostForm extends Component {
               <label className="text-muted mr-2">
                 Check this to schedule this post
               </label>
+
               <input
                 className="align-self-end"
                 type="checkbox"
@@ -224,7 +259,10 @@ class PostForm extends Component {
             <label style={{ fileInput }} htmlFor="file">
               <i
                 className="fas fa-paperclip mt-3 ml-4"
-                style={{ fontSize: "27px", color: "darkgray" }}
+                style={{
+                  fontSize: "27px",
+                  color: this.state.image === null ? "darkgray" : "darkseagreen"
+                }}
               />
               <input
                 style={{ display: "none" }}
@@ -232,14 +270,17 @@ class PostForm extends Component {
                 type="file"
                 name="file"
                 className="upload-file"
+                accept="image/*"
                 id="file"
-                onChange={this.imageuploadtrythree}
+                onChange={this.imageupload}
                 encType="multipart/form-data"
               />
             </label>
           </div>
         </form>
         {dateinput}
+
+        {selectedfile}
       </div>
     );
   }

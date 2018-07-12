@@ -1,7 +1,7 @@
 const loadFbLoginApi = () => {
   window.fbAsyncInit = function() {
     window.FB.init({
-      appId: "836410109895941",
+      appId: "192317854957402",
       cookie: true, // enable cookies to allow the server to access
       // the session
       xfbml: true, // parse social plugins on this page

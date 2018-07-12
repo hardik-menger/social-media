@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { groupPost } from "../../actions/pageaction";
-import PostForm from "../forms/PostForm";
+import { Link } from "react-router-dom";
 class PostConfirmation extends Component {
   closePopUp = () => {
     document.getElementById("close").click();
@@ -30,52 +30,14 @@ class PostConfirmation extends Component {
     return (
       <div>
         <ul className="list-group list-group-flush ">{list}</ul>
-        <button
-          type="button"
-          className="btn btn btn-outline-success btn-md m-4"
-          data-toggle="modal"
-          data-target="#postform"
-        >
-          Post To Pages
-        </button>
-        <div
-          className="modal fade "
-          id="postform"
-          role="dialog"
-          aria-labelledby="myModalLabel"
-          aria-hidden="true"
-        >
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title" id="exampleModalLongTitle">
-                  Confirm Pages
-                </h5>
-                <button
-                  type="button"
-                  className="close"
-                  data-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div className="modal-body">
-                <PostForm />
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-default closeform"
-                  data-dismiss="modal"
-                  id="close"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Link to="/post">
+          <button
+            type="button"
+            className="btn btn btn-outline-success btn-md m-4"
+          >
+            Post To Pages
+          </button>
+        </Link>
       </div>
     );
   }
