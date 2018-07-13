@@ -8,6 +8,7 @@ import { Provider } from "react-redux";
 import store from "./store";
 import PostForm from "./components/forms/PostForm";
 import PrivateRoute from "./components/common/PrivateRoute";
+import PostComponent from "./components/Posts/PostComponent";
 class App extends Component {
   render() {
     return (
@@ -23,6 +24,13 @@ class App extends Component {
                 <Switch>
                   <PrivateRoute exact path="/post" component={PostForm} />
                 </Switch>
+                <Switch>
+                  <PrivateRoute
+                    exact
+                    path="/posts/:pageid/:token"
+                    component={PostComponent}
+                  />
+                </Switch>{" "}
                 <Route exact path="/" component={Landing} />
               </div>
               <Footer />

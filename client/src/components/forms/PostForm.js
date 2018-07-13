@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import Datetime from "react-datetime";
 import "../common/datepicker.css";
-import { withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 class PostForm extends Component {
   constructor(props) {
     super(props);
@@ -54,7 +54,6 @@ class PostForm extends Component {
                 }
               }
             );
-            alert("Post Unsuccessfull");
           } else {
             alert("Post Unsuccessfull Login again");
           }
@@ -85,7 +84,6 @@ class PostForm extends Component {
           }
         })
       );
-      alert("Post Unsuccessfull");
     } else {
       if (this.state.date.length === 0) {
         alert("Select time duration or uncheck the checkbox");
@@ -107,12 +105,9 @@ class PostForm extends Component {
                     alert("Error occured");
                   } else {
                     this.props.history.push("/");
-                    document.getElementsByClassName("fade")[0].style.opacity =
-                      "1";
                   }
                 }
               );
-              alert("Post Unsuccessfull");
             } else {
               alert("Post Unsuccessfull Login again");
             }
@@ -207,9 +202,15 @@ class PostForm extends Component {
     return (
       <div
         style={{
-          height: "55vh"
+          height: "60vh"
         }}
       >
+        <Link to="/pages">
+          {" "}
+          <button type="button" className="btn btn-outline-info mb-4">
+            Go back
+          </button>
+        </Link>
         <form onSubmit={this.onSubmit}>
           <div className="input-group">
             <div className="input-group-prepend">

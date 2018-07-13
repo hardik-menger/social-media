@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { groupPost } from "../actions/pageaction";
+import { Link } from "react-router-dom";
 class SinglePost extends Component {
   constructor(props) {
     super(props);
@@ -82,6 +83,16 @@ class SinglePost extends Component {
                   ? added
                   : add}
               </button>
+              <Link
+                to={
+                  "/posts/" +
+                  this.props.page.id +
+                  "/" +
+                  this.props.page.access_token
+                }
+              >
+                <button className="btn btn-secondary btn-sm ml-4">Posts</button>
+              </Link>
             </label>
           </div>
         </div>
