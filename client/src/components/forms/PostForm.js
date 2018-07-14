@@ -59,7 +59,7 @@ class PostForm extends Component {
           }
         })
       );
-    } else if (this.state.image !== null) {
+    } else if (this.state.image !== null && this.state.date.length === 0) {
       this.props.pages.pageArray.map(post =>
         window.FB.getLoginStatus(response => {
           if (response.status === "connected") {
@@ -88,31 +88,58 @@ class PostForm extends Component {
       if (this.state.date.length === 0) {
         alert("Select time duration or uncheck the checkbox");
       } else {
-        this.props.pages.pageArray.map(post =>
-          window.FB.getLoginStatus(response => {
-            if (response.status === "connected") {
-              window.FB.api(
-                "/" + post.id + "/feed",
-                "post",
-                {
-                  message: userData.post,
-                  scheduled_publish_time: this.state.date,
-                  published: false,
-                  access_token: post.access_token
-                },
-                res => {
-                  if (!res || res.error) {
-                    alert("Error occured");
-                  } else {
-                    this.props.history.push("/");
+        if (this.state.image === null) {
+          this.props.pages.pageArray.map(post =>
+            window.FB.getLoginStatus(response => {
+              if (response.status === "connected") {
+                window.FB.api(
+                  "/" + post.id + "/feed",
+                  "post",
+                  {
+                    message: userData.post,
+                    scheduled_publish_time: this.state.date,
+                    published: false,
+                    access_token: post.access_token
+                  },
+                  res => {
+                    if (!res || res.error) {
+                      alert("Error occured");
+                    } else {
+                      this.props.history.push("/");
+                    }
                   }
-                }
-              );
-            } else {
-              alert("Post Unsuccessfull Login again");
-            }
-          })
-        );
+                );
+              } else {
+                alert("Post Unsuccessfull Login again");
+              }
+            })
+          );
+        } else {
+          this.props.pages.pageArray.map(post =>
+            window.FB.getLoginStatus(response => {
+              if (response.status === "connected") {
+                window.FB.api(
+                  `/${post.id}/feed`,
+                  "post",
+                  {
+                    message: "Test to post a photo",
+                    src: this.state.image,
+                    access_token: this.props.auth.user.authResponse.accessToken
+                  },
+                  response => {
+                    if (!response || response.error) {
+                      console.log("Failure! ", response.error.message);
+                    } else {
+                      this.props.history.push("/");
+                      document.getElementsByClassName("fade")[0].style.opacity =
+                        "1";
+                    }
+                  }
+                );
+              }
+            })
+          );
+        }
       }
     }
     if (submitted) {

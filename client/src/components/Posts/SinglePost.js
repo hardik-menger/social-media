@@ -1,13 +1,7 @@
 import React, { Component } from "react";
 
 export default class SinglePost extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      display: ""
-    };
-  }
-  delete = id => {
+  delete = (id, type) => {
     window.FB.api(
       `/${id}`,
       "DELETE",
@@ -15,7 +9,7 @@ export default class SinglePost extends Component {
       response => {
         if (response && !response.error) {
           if (response.success) {
-            this.setState({ display: "none" });
+            this.props.deletefromlist(id, type);
           } else {
             alert("Error occured while deleting");
           }
@@ -24,9 +18,8 @@ export default class SinglePost extends Component {
     );
   };
   render() {
-    console.log(this.state.display);
     return (
-      <div className="card mb-2" style={{ display: this.state.display }}>
+      <div className="card mb-2">
         <div className="card-header d-flex justify-content-end text-muted">
           Due Date {new Date(this.props.post.created_time).toString()}
         </div>
@@ -63,13 +56,17 @@ export default class SinglePost extends Component {
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
-                <div className="modal-body">...</div>
+                <div className="modal-body">
+                  Are you sure you want to delete this post
+                </div>
                 <div className="modal-footer">
                   <button
                     type="button"
                     className="btn btn-danger"
                     data-dismiss="modal"
-                    onClick={() => this.delete(this.props.post.id)}
+                    onClick={() =>
+                      this.delete(this.props.post.id, this.props.type)
+                    }
                   >
                     Delete
                   </button>

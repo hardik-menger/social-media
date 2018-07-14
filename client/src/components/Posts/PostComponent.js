@@ -28,7 +28,29 @@ class PostComponent extends Component {
       }&debug=all&format=json&is_published=false&method=get&pretty=0&suppress_http_code=1`
     ).then(data => data.json().then(d => this.setState({ published: d.data })));
   }
-
+  deletefromlist = (id, type) => {
+    if (type === "published") {
+      let arr = [...this.state.published];
+      var removeIndex = arr
+        .map(function(item) {
+          return item.id;
+        })
+        .indexOf(id);
+      arr.splice(removeIndex, 1);
+      this.setState({ published: arr });
+    } else {
+      let arr = [...this.state.unpublished];
+      removeIndex = arr
+        .map(function(item) {
+          return item.id;
+        })
+        .indexOf(id);
+      arr.splice(removeIndex, 1);
+      this.setState({
+        published: arr
+      });
+    }
+  };
   render() {
     return (
       <div>
@@ -44,6 +66,8 @@ class PostComponent extends Component {
               post={post}
               key={post.id}
               token={this.props.match.params.token}
+              deletefromlist={this.deletefromlist}
+              type="notpublished"
             />
           ))
         )}
@@ -59,6 +83,8 @@ class PostComponent extends Component {
               post={post}
               key={post.id}
               token={this.props.match.params.token}
+              deletefromlist={this.deletefromlist}
+              type="published"
             />
           ))
         )}
