@@ -67,9 +67,9 @@ class PostForm extends Component {
               `/${post.id}/feed`,
               "post",
               {
-                message: "Test to post a photo",
-                src: this.state.image,
-                access_token: this.props.auth.user.authResponse.accessToken
+                message: "Test to post a photo  with source",
+                source: this.state.image,
+                access_token: post.access_token
               },
               response => {
                 if (!response || response.error) {
@@ -123,7 +123,7 @@ class PostForm extends Component {
                   "post",
                   {
                     message: "Test to post a photo",
-                    src: this.state.image,
+                    source: this.state.image,
                     access_token: this.props.auth.user.authResponse.accessToken
                   },
                   response => {
@@ -167,7 +167,7 @@ class PostForm extends Component {
         var blob = new Blob([idarrayBuffer], { type: file.type });
 
         this.blobToDataURL(blob, data => {
-          this.setState({ image: data });
+          this.setState({ image: blob });
         });
       };
       reader.readAsArrayBuffer(file);
