@@ -24,7 +24,10 @@ export default class SinglePost extends Component {
           Due Date {new Date(this.props.post.created_time).toString()}
         </div>
         <div className="card-text m-4 d-flex justify-content-between">
-          {this.props.post.message}{" "}
+          {this.props.post.message || "No Message Provided"}{" "}
+          {this.props.post.picture ? (
+            <img src={this.props.post.picture} width="50" alt="post-image" />
+          ) : null}
           <button
             type="button"
             className="btn btn-outline-danger"

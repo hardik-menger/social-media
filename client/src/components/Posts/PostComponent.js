@@ -1,22 +1,18 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
-import { loginuser } from "../../actions/authaction";
 import SinglePost from "./SinglePost";
 class PostComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      notpublished: null,
-      published: null
+      notpublished: [],
+      published: []
     };
   }
   componentDidMount() {
     fetch(
       `https://graph.facebook.com/v3.0/${
         this.props.match.params.pageid
-      }/promotable_posts?access_token=${
-        this.props.match.params.token
-      }&debug=all&format=json&is_published=false&method=get&pretty=0&suppress_http_code=1`
+      }/promotable_posts?access_token=${this.props.match.params.token}`
     ).then(data =>
       data.json().then(d => this.setState({ notpublished: d.data }))
     );
@@ -25,10 +21,11 @@ class PostComponent extends Component {
         this.props.match.params.pageid
       }/feed?access_token=${
         this.props.match.params.token
-      }&debug=all&format=json&is_published=false&method=get&pretty=0&suppress_http_code=1`
+      }&fields=picture,id,created_time,story,message&debug=all&format=json&is_published=true&method=get&pretty=0&suppress_http_code=1`
     ).then(data => data.json().then(d => this.setState({ published: d.data })));
   }
   deletefromlist = (id, type) => {
+    console.log(this.state);
     if (type === "published") {
       let arr = [...this.state.published];
       var removeIndex = arr
@@ -92,10 +89,4 @@ class PostComponent extends Component {
     );
   }
 }
-const mapStateToProps = state => {
-  return { auth: state.auth, pages: state.pages };
-};
-export default connect(
-  mapStateToProps,
-  { loginuser }
-)(PostComponent);
+export default PostComponent;
