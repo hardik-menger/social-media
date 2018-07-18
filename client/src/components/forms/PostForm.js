@@ -3,29 +3,60 @@ import { connect } from "react-redux";
 import Datetime from "react-datetime";
 import "../common/datepicker.css";
 import { withRouter, Link } from "react-router-dom";
+import Dropzone from "react-dropzone";
+import request from "superagent";
+const CLOUDINARY_UPLOAD_PRESET = "cnt10dyt";
+const CLOUDINARY_UPLOAD_URL =
+  "https://api.cloudinary.com/v1_1/dnffetztd/upload";
 class PostForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
       post: "",
       errors: {},
-      image: null,
       checked: false,
-      date: ""
+      date: "",
+      uploadedFileCloudinaryUrl: null
     };
-    this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
   }
+  onImageDrop(files) {
+    this.setState({
+      uploadedFile: files[0]
+    });
 
+    this.handleImageUpload(files[0]);
+  }
+  handleImageUpload(file) {
+    let upload = request
+      .post(CLOUDINARY_UPLOAD_URL)
+      .field("upload_preset", CLOUDINARY_UPLOAD_PRESET)
+      .field("file", file);
+
+    upload.end((err, response) => {
+      if (err) {
+        console.error(err);
+      }
+
+      if (response.body.secure_url !== "") {
+        this.setState({
+          uploadedFileCloudinaryUrl: response.body.secure_url
+        });
+      }
+    });
+  }
+
+  // //delete
   handleChange = () => {
     this.setState({
       checked: !this.state.checked
     });
   };
+  // //delete
   onCheck = date => {
     this.setState({ date: new Date(date._d).getTime() / 1000 });
   };
-  onSubmit(e) {
+  onSubmit = e => {
     let submitted = false;
     e.preventDefault();
 
@@ -67,8 +98,8 @@ class PostForm extends Component {
               `/${post.id}/feed`,
               "post",
               {
-                message: "Test to post a photo  with source",
-                source: this.state.image,
+                message: this.state.post,
+                source: this.state.uploadedFileCloudinaryUrl,
                 access_token: post.access_token
               },
               response => {
@@ -122,9 +153,11 @@ class PostForm extends Component {
                   `/${post.id}/feed`,
                   "post",
                   {
-                    message: "Test to post a photo",
-                    source: this.state.image,
-                    access_token: this.props.auth.user.authResponse.accessToken
+                    scheduled_publish_time: this.state.date,
+                    published: false,
+                    message: this.state.post,
+                    source: this.state.uploadedFileCloudinaryUrl,
+                    access_token: post.access_token
                   },
                   response => {
                     if (!response || response.error) {
@@ -146,33 +179,34 @@ class PostForm extends Component {
       this.closePopUp();
       this.closeconform();
     }
-  }
-  onChange(e) {
-    this.setState({ [e.target.name]: e.target.value });
-  }
-  blobToDataURL(blob, callback) {
-    var a = new FileReader();
-    a.onload = function(e) {
-      callback(e.target.result);
-    };
-    a.readAsDataURL(blob);
-  }
-  imageupload = e => {
-    e.preventDefault();
-    var file = this.refs.file.files[0];
-    if (file) {
-      var reader = new FileReader();
-      reader.onload = e => {
-        var idarrayBuffer = e.target.result;
-        var blob = new Blob([idarrayBuffer], { type: file.type });
-
-        this.blobToDataURL(blob, data => {
-          this.setState({ image: blob });
-        });
-      };
-      reader.readAsArrayBuffer(file);
-    }
   };
+
+  onPostChange = e => {
+    this.setState({ [e.target.name]: e.target.value });
+  };
+  // blobToDataURL(blob, callback) {
+  //   var a = new FileReader();
+  //   a.onload = function(e) {
+  //     callback(e.target.result);
+  //   };
+  //   a.readAsDataURL(blob);
+  // }
+  // imageupload = e => {
+  //   e.preventDefault();
+  //   var file = this.refs.file.files[0];
+  //   if (file) {
+  //     var reader = new FileReader();
+  //     reader.onload = e => {
+  //       var idarrayBuffer = e.target.result;
+  //       var blob = new Blob([idarrayBuffer], { type: file.type });
+
+  //       this.blobToDataURL(blob, data => {
+  //         this.setState({ image: blob });
+  //       });
+  //     };
+  //     reader.readAsArrayBuffer(file);
+  //   }
+  // };
   render() {
     const { errors } = this.state;
     const fileInput = {
@@ -197,7 +231,7 @@ class PostForm extends Component {
     ) : null;
     let selectedfile;
     selectedfile =
-      this.state.image !== null ? (
+      this.state.uploadedFileCloudinaryUrl !== null ? (
         <div className="card mt-4">
           <div className="card-header">Selected File</div>
           <div className="card-body">
@@ -205,7 +239,7 @@ class PostForm extends Component {
               <div>
                 <img
                   className="pr-4"
-                  src={this.state.image}
+                  src={this.state.uploadedFileCloudinaryUrl}
                   alt="Selected File"
                   height="50"
                 />
@@ -214,8 +248,11 @@ class PostForm extends Component {
                 <button
                   type="button"
                   className="btn btn-outline-secondary"
-                  onClick={() => this.setState({ image: null })}
+                  onClick={() =>
+                    this.setState({ uploadedFileCloudinaryUrl: null })
+                  }
                 >
+                  delete
                   <i className="fas fa-times" />
                 </button>
               </div>
@@ -253,7 +290,7 @@ class PostForm extends Component {
               className="form-control"
               aria-label="With textarea"
               value={this.state.post}
-              onChange={this.onChange}
+              onChange={this.onPostChange}
               type="text"
               error={errors.email}
               placeholder="Enter yout post"
@@ -305,9 +342,15 @@ class PostForm extends Component {
               />
             </label>
           </div>
+          <Dropzone
+            multiple={false}
+            accept="image/jpg,image/png"
+            onDrop={this.onImageDrop.bind(this)}
+          >
+            <p>Drop an image or click to select a file to upload.</p>
+          </Dropzone>
         </form>
         {dateinput}
-
         {selectedfile}
       </div>
     );
