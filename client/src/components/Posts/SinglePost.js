@@ -2,31 +2,31 @@ import React, { Component } from "react";
 
 export default class SinglePost extends Component {
   delete = (id, type) => {
-    window.FB.api(
-      `/${id}`,
-      "DELETE",
-      { access_token: this.props.token },
-      response => {
-        if (response && !response.error) {
-          if (response.success) {
-            this.props.deletefromlist(id, type);
-          } else {
-            alert("Error occured while deleting");
-          }
-        }
-      }
-    );
+    console.log(id, type);
+    // this.props.deletefromlist(id, type);
   };
   render() {
     return (
-      <div className="card mb-2">
+      <div className="card ">
         <div className="card-header d-flex justify-content-end text-muted">
-          Due Date {new Date(this.props.post.created_time).toString()}
+          Due Date
+          {/* {new Date(this.props.post.created_time).toString()} */}
         </div>
-        <div className="card-text m-4 d-flex justify-content-between">
+        <div
+          className={
+            this.props.post.picture
+              ? "card-text m-4 d-flex flex-column align-items-center"
+              : "card-text m-4 d-flex justify-content-between"
+          }
+        >
           {this.props.post.message || "No Message Provided"}{" "}
           {this.props.post.picture ? (
-            <img src={this.props.post.picture} width="50" alt="post-image" />
+            <img
+              src={this.props.post.picture}
+              style={{ width: "50%" }}
+              alt="postImage"
+              className="m-2"
+            />
           ) : null}
           <button
             type="button"
