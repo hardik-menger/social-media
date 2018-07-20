@@ -1,13 +1,32 @@
 import React, { Component } from "react";
 
 export default class SinglePost extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      submit: false
+    };
+  }
+
   delete = (id, type) => {
-    console.log(id, type);
-    // this.props.deletefromlist(id, type);
+    window.FB.api(
+      `/${id}`,
+      "DELETE",
+      { access_token: this.props.token },
+      response => {
+        if (response && !response.error) {
+          if (response.success) {
+            this.props.deletefromlist(id, type);
+          } else {
+            alert("Error occured while deleting");
+          }
+        }
+      }
+    );
   };
   render() {
     return (
-      <div className="card ">
+      <div className="card">
         <div className="card-header d-flex justify-content-end text-muted">
           Due Date
           {/* {new Date(this.props.post.created_time).toString()} */}
@@ -33,6 +52,7 @@ export default class SinglePost extends Component {
             className="btn btn-outline-danger"
             data-toggle="modal"
             data-target="#confirmDelete"
+            onClick={() => this.delete(this.props.post.id, this.props.type)}
           >
             Delete
           </button>
@@ -67,9 +87,6 @@ export default class SinglePost extends Component {
                     type="button"
                     className="btn btn-danger"
                     data-dismiss="modal"
-                    onClick={() =>
-                      this.delete(this.props.post.id, this.props.type)
-                    }
                   >
                     Delete
                   </button>
