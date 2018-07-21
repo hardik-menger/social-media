@@ -1,14 +1,15 @@
 import React, { Component } from "react";
-
+import Spinner from "../common/spinner";
 export default class SinglePost extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      submit: false
+      deleted: false
     };
   }
 
   delete = (id, type) => {
+    this.setState({ deleted: true });
     window.FB.api(
       `/${id}`,
       "DELETE",
@@ -17,6 +18,7 @@ export default class SinglePost extends Component {
         if (response && !response.error) {
           if (response.success) {
             this.props.deletefromlist(id, type);
+            this.setState({ deleted: false });
           } else {
             alert("Error occured while deleting");
           }
@@ -31,7 +33,20 @@ export default class SinglePost extends Component {
           this.props.post.scheduled_publish_time * 1000
         )}`;
     return (
-      <div className="card">
+      <div className="card" style={{ position: "relative" }}>
+        <div
+          style={{
+            position: "absolute",
+            left: "0",
+            right: "0",
+            marginLeft: "auto",
+            marginRight: "auto",
+            top: "50%",
+            display: this.state.deleted ? "block" : "none"
+          }}
+        >
+          <Spinner />
+        </div>
         <div className="card-header d-flex justify-content-end text-muted">
           {postDate}
         </div>
@@ -54,57 +69,13 @@ export default class SinglePost extends Component {
           <button
             type="button"
             className="btn btn-outline-danger"
-            data-toggle="modal"
-            data-target="#confirmDelete"
-            onClick={() => this.delete(this.props.post.id, this.props.type)}
+            onClick={() => {
+              if (window.confirm("Are you sure you wish to delete this Post?"))
+                this.delete(this.props.post.id, this.props.type);
+            }}
           >
             Delete
           </button>
-          <div
-            className="modal fade"
-            id="confirmDelete"
-            tabIndex="-1"
-            role="dialog"
-            aria-labelledby="confirmDeleteLabel"
-            aria-hidden="true"
-          >
-            <div className="modal-dialog" role="document">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title" id="confirmDeleteLabel">
-                    Confirm
-                  </h5>
-                  <button
-                    type="button"
-                    className="close"
-                    data-dismiss="modal"
-                    aria-label="Close"
-                  >
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div className="modal-body">
-                  Are you sure you want to delete this post
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    data-dismiss="modal"
-                  >
-                    Delete
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    data-dismiss="modal"
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     );
