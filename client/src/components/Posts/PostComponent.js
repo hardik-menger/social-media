@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import SinglePost from "./SinglePost";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
+import loadFbLoginApi from "../../FB/loadsdk";
+import { loginuser } from "../../actions/authaction";
 class PostComponent extends Component {
   constructor(props) {
     super(props);
@@ -11,26 +13,47 @@ class PostComponent extends Component {
     };
   }
   componentDidMount() {
-    fetch(
-      `https://graph.facebook.com/v3.0/${
-        this.props.match.params.pageid
-      }/scheduled_posts?fields=message,creation_time,modified_time,picture,thumbnail,scheduled_publish_time&access_token=${
-        this.props.match.params.token
-      }`
-    ).then(data =>
-      data.json().then(d => this.setState({ notpublished: d.data }))
-    );
-    fetch(
-      `https://graph.facebook.com/v3.0/${
-        this.props.match.params.pageid
-      }/feed?access_token=${
-        this.props.match.params.token
-      }&fields=picture,id,created_time,story,message&debug=all&format=json&is_published=true&method=get&pretty=0&suppress_http_code=1`
-    ).then(data => data.json().then(d => this.setState({ published: d.data })));
+    Promise.resolve(loadFbLoginApi()).then(() => {
+      this.statusChangeCallback();
+    });
+  }
+  async statusChangeCallback() {
+    const auth = JSON.parse(localStorage.getItem("auth"));
+    const { status } = auth;
+    if (status === "connected") {
+      await fetch(
+        `https://graph.facebook.com/v3.0/${
+          this.props.match.params.pageid
+        }/scheduled_posts?fields=message,creation_time,modified_time,picture,thumbnail,scheduled_publish_time&access_token=${
+          this.props.match.params.token
+        }`
+      ).then(data =>
+        data.json().then(d => {
+          if (d.error === undefined) {
+            this.setState({ notpublished: d.data });
+          } else {
+            window.FB.login(response => {
+              if (response.authResponse) {
+                this.props.loginuser(response);
+                this.statusChangeCallback();
+              }
+            });
+          }
+        })
+      );
+      await fetch(
+        `https://graph.facebook.com/v3.0/${
+          this.props.match.params.pageid
+        }/feed?access_token=${
+          this.props.match.params.token
+        }&fields=picture,id,created_time,story,message&debug=all&format=json&is_published=true&method=get&pretty=0&suppress_http_code=1`
+      ).then(data =>
+        data.json().then(d => this.setState({ published: d.data }))
+      );
+    }
   }
 
   deletefromlist = (id, type) => {
-    console.log(id, type);
     if (type === "published") {
       let arr = [...this.state.published];
       var removeIndex = arr
@@ -41,20 +64,16 @@ class PostComponent extends Component {
       arr.splice(removeIndex, 1);
       this.setState({ published: arr });
     } else {
-      console.log(this.state);
-      let arr = [...this.state.unpublished];
+      let arr = [...this.state.notpublished];
       removeIndex = arr
         .map(function(item) {
           return item.id;
         })
         .indexOf(id);
       arr.splice(removeIndex, 1);
-      this.setState(
-        {
-          published: arr
-        },
-        () => console.log(this.state)
-      );
+      this.setState({
+        notpublished: arr
+      });
     }
   };
 
@@ -79,29 +98,6 @@ class PostComponent extends Component {
                   id={post.id}
                   deletefromlist={this.deletefromlist}
                 />{" "}
-                <div className="card">
-                  <div className="card-header d-flex justify-content-end text-muted">
-                    Due Date
-                    {/* {new Date(this.props.post.created_time).toString()} */}
-                  </div>
-                  <div
-                    className={
-                      this.props.post.picture
-                        ? "card-text m-4 d-flex flex-column align-items-center"
-                        : "card-text m-4 d-flex justify-content-between"
-                    }
-                  >
-                    {this.props.post.message || "No Message Provided"}{" "}
-                    {this.props.post.picture ? (
-                      <img
-                        src={this.props.post.picture}
-                        style={{ width: "50%" }}
-                        alt="postImage"
-                        className="m-2"
-                      />
-                    ) : null}
-                  </div>
-                </div>
               </div>
             ))
           )}
@@ -133,9 +129,9 @@ class PostComponent extends Component {
   }
 }
 const mapStateToProps = state => {
-  return { auth: state.auth, pages: state.pages };
+  return { auth: state.auth };
 };
 export default connect(
   mapStateToProps,
-  null
+  { loginuser }
 )(withRouter(PostComponent));

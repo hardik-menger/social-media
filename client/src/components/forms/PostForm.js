@@ -13,7 +13,7 @@ class PostForm extends Component {
     super(props);
     this.state = {
       post: "",
-      errors: {},
+      promptMedia: false,
       checked: false,
       date: "",
       uploadedFileCloudinaryUrl: null
@@ -35,7 +35,7 @@ class PostForm extends Component {
 
     upload.end((err, response) => {
       if (err) {
-        console.error(err);
+        alert(err);
       }
 
       if (response.body.secure_url !== "") {
@@ -46,25 +46,24 @@ class PostForm extends Component {
     });
   }
 
-  // //delete
   handleChange = () => {
     this.setState({
       checked: !this.state.checked
     });
   };
-  // //delete
   onCheck = date => {
     this.setState({ date: new Date(date._d).getTime() / 1000 });
   };
   onSubmit = e => {
-    let submitted = false;
     e.preventDefault();
 
     const userData = {
       post: this.state.post
     };
-
+    let length = this.props.pages.pageArray.length;
+    let i = 0;
     if (!this.state.checked && this.state.image === null) {
+      i = 0;
       this.props.pages.pageArray.map(post =>
         window.FB.getLoginStatus(response => {
           if (response.status === "connected") {
@@ -79,7 +78,11 @@ class PostForm extends Component {
                 if (!res || res.error) {
                   alert(res.error.message);
                 } else {
-                  this.props.history.push("/");
+                  i++;
+
+                  if (i === length) {
+                    alert("Posts Successfull");
+                  }
                   document.getElementsByClassName("fade")[0].style.opacity =
                     "1";
                 }
@@ -91,6 +94,7 @@ class PostForm extends Component {
         })
       );
     } else if (this.state.image !== null && this.state.date.length === 0) {
+      i = 0;
       this.props.pages.pageArray.map(post =>
         window.FB.getLoginStatus(response => {
           if (response.status === "connected") {
@@ -104,9 +108,13 @@ class PostForm extends Component {
               },
               response => {
                 if (!response || response.error) {
-                  console.log("Failure! ", response.error.message);
+                  alert(response.error.message);
                 } else {
-                  this.props.history.push("/");
+                  i++;
+
+                  if (i === length) {
+                    alert("Posts Successfull");
+                  }
                   document.getElementsByClassName("fade")[0].style.opacity =
                     "1";
                 }
@@ -120,6 +128,7 @@ class PostForm extends Component {
         alert("Select time duration or uncheck the checkbox");
       } else {
         if (this.state.image === null) {
+          i = 0;
           this.props.pages.pageArray.map(post =>
             window.FB.getLoginStatus(response => {
               if (response.status === "connected") {
@@ -134,9 +143,13 @@ class PostForm extends Component {
                   },
                   res => {
                     if (!res || res.error) {
-                      alert("Error occured");
+                      alert(res.error.message);
                     } else {
-                      this.props.history.push("/");
+                      i++;
+
+                      if (i === length) {
+                        alert("Posts Successfull");
+                      }
                     }
                   }
                 );
@@ -146,6 +159,7 @@ class PostForm extends Component {
             })
           );
         } else {
+          i = 0;
           this.props.pages.pageArray.map(post =>
             window.FB.getLoginStatus(response => {
               if (response.status === "connected") {
@@ -161,9 +175,13 @@ class PostForm extends Component {
                   },
                   response => {
                     if (!response || response.error) {
-                      console.log("Failure! ", response.error.message);
+                      alert(response.error.message);
                     } else {
-                      this.props.history.push("/");
+                      i++;
+
+                      if (i === length) {
+                        alert("Posts Successfull");
+                      }
                       document.getElementsByClassName("fade")[0].style.opacity =
                         "1";
                     }
@@ -175,46 +193,13 @@ class PostForm extends Component {
         }
       }
     }
-    if (submitted) {
-      this.closePopUp();
-      this.closeconform();
-    }
   };
 
   onPostChange = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
-  // blobToDataURL(blob, callback) {
-  //   var a = new FileReader();
-  //   a.onload = function(e) {
-  //     callback(e.target.result);
-  //   };
-  //   a.readAsDataURL(blob);
-  // }
-  // imageupload = e => {
-  //   e.preventDefault();
-  //   var file = this.refs.file.files[0];
-  //   if (file) {
-  //     var reader = new FileReader();
-  //     reader.onload = e => {
-  //       var idarrayBuffer = e.target.result;
-  //       var blob = new Blob([idarrayBuffer], { type: file.type });
 
-  //       this.blobToDataURL(blob, data => {
-  //         this.setState({ image: blob });
-  //       });
-  //     };
-  //     reader.readAsArrayBuffer(file);
-  //   }
-  // };
   render() {
-    const { errors } = this.state;
-    const fileInput = {
-      border: "1px solid #ccc",
-      display: "inline-block",
-      padding: "6px 12px",
-      cursor: "pointer"
-    };
     const dateinput = this.state.checked ? (
       <div>
         {" "}
@@ -262,13 +247,18 @@ class PostForm extends Component {
       ) : (
         (selectedfile = <div />)
       );
-
+    const dropzoneStyle = {
+      width: "80%",
+      height: "30vh",
+      border: "2px dashed #aeaeae",
+      margin: "0px auto",
+      borderRadius: "8px",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center"
+    };
     return (
-      <div
-        style={{
-          height: "60vh"
-        }}
-      >
+      <div>
         <Link to="/pages">
           {" "}
           <button type="button" className="btn btn-outline-info mb-4">
@@ -292,12 +282,10 @@ class PostForm extends Component {
               value={this.state.post}
               onChange={this.onPostChange}
               type="text"
-              error={errors.email}
               placeholder="Enter yout post"
               name="post"
             />
           </div>
-
           <div
             style={{
               padding: "1rem",
@@ -316,39 +304,34 @@ class PostForm extends Component {
                 checked={this.state.checked}
                 onChange={this.handleChange}
               />
+            </div>{" "}
+            <div>
+              <button
+                type="button"
+                className="btn btn-outline-secondary mr-3"
+                onClick={() =>
+                  this.setState(prevState => ({
+                    promptMedia: !prevState.promptMedia
+                  }))
+                }
+              >
+                <i className="fas fa-paperclip" />
+              </button>
+              <button type="submit" className="btn btn-outline-primary ">
+                Post
+              </button>
             </div>
-
-            <button type="submit" className="btn btn-outline-primary ">
-              Post
-            </button>
-            <label style={{ fileInput }} htmlFor="file">
-              <i
-                className="fas fa-paperclip mt-3 ml-4"
-                style={{
-                  fontSize: "27px",
-                  color: this.state.image === null ? "darkgray" : "darkseagreen"
-                }}
-              />
-              <input
-                style={{ display: "none" }}
-                ref="file"
-                type="file"
-                name="file"
-                className="upload-file"
-                accept="image/*"
-                id="file"
-                onChange={this.imageupload}
-                encType="multipart/form-data"
-              />
-            </label>
           </div>
-          <Dropzone
-            multiple={false}
-            accept="image/jpg,image/png"
-            onDrop={this.onImageDrop.bind(this)}
-          >
-            <p>Drop an image or click to select a file to upload.</p>
-          </Dropzone>
+          {this.state.promptMedia ? (
+            <Dropzone
+              style={dropzoneStyle}
+              multiple={false}
+              accept="image/*"
+              onDrop={this.onImageDrop.bind(this)}
+            >
+              <p>Drop an image or click to select a file to upload.</p>
+            </Dropzone>
+          ) : null}{" "}
         </form>
         {dateinput}
         {selectedfile}
