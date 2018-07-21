@@ -201,17 +201,14 @@ class PostForm extends Component {
 
   render() {
     const dateinput = this.state.checked ? (
-      <div>
-        {" "}
-        <div
-          className=" d-flex justify-content-center"
-          style={{ width: "100%" }}
-        >
-          <Datetime
-            onChange={this.onCheck}
-            inputProps={{ placeholder: "Click here to set time duration" }}
-          />
-        </div>
+      <div
+        className=" d-flex justify-content-center mb-4 mt-4"
+        style={{ width: "100%" }}
+      >
+        <Datetime
+          onChange={this.onCheck}
+          inputProps={{ placeholder: "Click here to set time duration" }}
+        />
       </div>
     ) : null;
     let selectedfile;
@@ -333,8 +330,8 @@ class PostForm extends Component {
             </Dropzone>
           ) : null}{" "}
         </form>
-        {dateinput}
         {selectedfile}
+        {dateinput}
       </div>
     );
   }
