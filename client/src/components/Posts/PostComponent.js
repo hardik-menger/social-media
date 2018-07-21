@@ -35,7 +35,9 @@ class PostComponent extends Component {
             window.FB.login(response => {
               if (response.authResponse) {
                 this.props.loginuser(response);
-                this.statusChangeCallback();
+
+                this.props.history.push("/pages");
+                alert("Your token expireed .. ");
               }
             });
           }

@@ -25,11 +25,15 @@ export default class SinglePost extends Component {
     );
   };
   render() {
+    const postDate = this.props.post.created_time
+      ? `Posted on ${new Date(this.props.post.created_time).toString()}`
+      : `Scheduled on ${new Date(
+          this.props.post.scheduled_publish_time * 1000
+        )}`;
     return (
       <div className="card">
         <div className="card-header d-flex justify-content-end text-muted">
-          Due Date
-          {/* {new Date(this.props.post.created_time).toString()} */}
+          {postDate}
         </div>
         <div
           className={

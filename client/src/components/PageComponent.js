@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { getpages, setpageloading } from "../actions/pageaction";
 import { loginuser } from "../actions/authaction";
-import SinglePost from "./SinglePost";
+import SinglePage from "./SinglePage";
 import Spinner from "./common/spinner";
 import loadFbLoginApi from "../FB/loadsdk";
 import PostConfirmation from "./PostConfirmation/PostConfirmation";
@@ -109,7 +109,7 @@ class PageComponent extends Component {
     if (this.props.pages.pages) {
       let fetchedPages = this.searchAndSort(this.state.sortby);
       pages = fetchedPages.map((page, index) => {
-        return <SinglePost page={page} key={index} />;
+        return <SinglePage page={page} key={index} />;
       });
     } else {
       pages = <Spinner />;
