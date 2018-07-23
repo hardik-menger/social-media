@@ -48,7 +48,6 @@ class Navbar extends Component {
     window.FB.login(
       response => {
         if (response.authResponse) {
-          console.log(response);
           this.props.loginuser(response);
         }
       },
