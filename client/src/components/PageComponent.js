@@ -16,13 +16,9 @@ class PageComponent extends Component {
   }
   addedAll;
   componentDidMount() {
-    try {
-      Promise.resolve(loadFbLoginApi()).then(() => {
-        this.statusChangeCallback();
-      });
-    } catch (err) {
-      console.log(err);
-    }
+    Promise.resolve(loadFbLoginApi()).then(() => {
+      this.statusChangeCallback();
+    });
   }
   async statusChangeCallback() {
     const auth = JSON.parse(localStorage.getItem("auth"));
