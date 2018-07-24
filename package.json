@@ -16,6 +16,7 @@
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
     "express": "^4.16.3",
+    "node-fetch": "^2.2.0",
     "react": "^16.4.1",
     "react-dropzone": "^4.2.13",
     "request-promise": "^4.2.2",
