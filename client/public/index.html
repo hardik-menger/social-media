@@ -20,18 +20,10 @@
       padding: 0px !important
     }
 
-    .modal-backdrop {
-      position: absolute;
-      height: 0;
-    }
-
-    .modal-open {
-      overflow: visible !important;
-      padding: 0 !important;
-    }
-
-    .modal-backdrop.show {
-      opacity: 0;
+    .modal:before {
+      content: '';
+      display: inline-block;
+      height: 20%;
     }
 
     ::-webkit-scrollbar {

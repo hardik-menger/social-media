@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { loginuser, logout } from "../../actions/authaction";
 import loadFbLoginApi from "../../FB/loadsdk";
+import "../../App.css";
 class Navbar extends Component {
   constructor(props) {
     super(props);
@@ -53,7 +54,6 @@ class Navbar extends Component {
       },
       {
         scope: "pages_manage_cta,pages_show_list,publish_pages,manage_pages",
-        // "pages_manage_cta,pages_show_list,publish_pages,manage_pages,publish_actions",
         return_scopes: true,
         enable_profile_selector: true
       }
@@ -61,23 +61,31 @@ class Navbar extends Component {
   };
 
   render() {
+    const modalDialog = {
+      height: "30vh",
+      margin: "0px auto",
+      padding: "0px",
+      verticalAlign: "middle"
+    };
+
+    const modalContent = {
+      height: "auto",
+      minHeight: "100%",
+      borderRadius: "0",
+      width: "100%",
+      margin: "0px"
+    };
     const authlinks = (
       <ul className="navbar-nav ml-auto">
         <li className="nav-item">
-          <Link to="/" className="nav-link" onClick={this.onlogout}>
+          <Link
+            to="/"
+            className="nav-link "
+            data-toggle="modal"
+            data-target="#addProfile"
+          >
             <span>
-              Logout <i className="fas fa-sign-out-alt" />
-            </span>
-          </Link>
-        </li>
-      </ul>
-    );
-    const guestlinks = (
-      <ul className="navbar-nav ml-auto">
-        <li className="nav-item">
-          <Link to="/" className="nav-link" onClick={this.handleFBLogin}>
-            <span>
-              Login <i className="fas fa-sign-in-alt" />
+              Add Profiles <i className="fas fa-sign-in-alt" />
             </span>
           </Link>
         </li>
@@ -103,11 +111,75 @@ class Navbar extends Component {
               <li className="nav-item">
                 <Link className="nav-link" to="/pages">
                   {" "}
-                  Pages
+                  Profiles
                 </Link>
               </li>
             </ul>
-            {this.props.auth.isAuthenticated ? authlinks : guestlinks}
+            {authlinks}
+            <div
+              className="modal fade nopadding"
+              id="addProfile"
+              role="dialog"
+              aria-labelledby="addProfileLabel"
+              aria-hidden="true"
+              style={{
+                maxWidth: "100%"
+              }}
+            >
+              <div className="modal-dialog" style={modalDialog}>
+                <div className="modal-content" style={modalContent}>
+                  <div className="modal-header">
+                    <h5 className="modal-title" id="exampleModalLongTitle">
+                      Add profiles
+                    </h5>
+                    <button
+                      type="button"
+                      className="close"
+                      data-dismiss="modal"
+                      aria-label="Close"
+                      id="close"
+                    >
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div className="modal-body">
+                    {this.props.auth.isAuthenticated ? (
+                      <button
+                        className="btn btn-block btn-social btn-facebook"
+                        onClick={this.onlogout}
+                      >
+                        <span className="fab fa-facebook" />
+                        <span> Logout from Facebook</span>
+                      </button>
+                    ) : (
+                      <button
+                        className="btn btn-block btn-social btn-facebook"
+                        onClick={this.handleFBLogin}
+                      >
+                        <span className="fab fa-facebook" />
+                        <span> Login with Facebook</span>
+                      </button>
+                    )}
+                    <button className="btn btn-block btn-social btn-instagram">
+                      <i className="fab fa-instagram" /> Sign in with Instagram
+                    </button>
+                    <button className="btn btn-block btn-social btn-twitter">
+                      <i className="fab fa-twitter" /> Sign in with Twitter
+                    </button>
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      type="button"
+                      className="btn btn-default closeconform"
+                      data-dismiss="modal"
+                      id="signin"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </nav>
