@@ -53,7 +53,11 @@ class PageComponent extends Component {
     this.setState({ [e.target.name]: e.target.value, sortby: "search" });
   };
   addAll = () => {
+    this.closePopUp();
     this.props.groupPostToAll(this.props.pages.pages);
+  };
+  closePopUp = () => {
+    document.getElementById("close").click();
   };
   searchAndSort = type => {
     switch (type) {

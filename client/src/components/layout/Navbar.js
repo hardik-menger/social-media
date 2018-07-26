@@ -117,7 +117,7 @@ class Navbar extends Component {
             </ul>
             {authlinks}
             <div
-              className="modal fade nopadding"
+              className="modal fade nopadding loginboard"
               id="addProfile"
               role="dialog"
               aria-labelledby="addProfileLabel"

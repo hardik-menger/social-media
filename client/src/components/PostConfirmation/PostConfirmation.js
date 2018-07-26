@@ -4,8 +4,11 @@ import { groupPost } from "../../actions/pageaction";
 import { Link } from "react-router-dom";
 class PostConfirmation extends Component {
   closePopUp = () => {
-    document.getElementById("close").click();
+    console.log("works");
+    document.getElementsByClassName("modal-backdrop")[0].style.backgroundColor =
+      "transparent";
   };
+
   removeFromList = page => {
     this.props.groupPost(page);
     if (this.props.pages.pageArray.length === 1) this.closePopUp();
@@ -34,6 +37,7 @@ class PostConfirmation extends Component {
           <button
             type="button"
             className="btn btn btn-outline-success btn-md m-4"
+            onClick={this.closePopUp}
           >
             Post To Pages
           </button>
