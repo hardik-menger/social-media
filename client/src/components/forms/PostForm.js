@@ -279,7 +279,7 @@ class PostForm extends Component {
               value={this.state.post}
               onChange={this.onPostChange}
               type="text"
-              placeholder="Enter yout post"
+              placeholder="Enter your post"
               name="post"
             />
           </div>
