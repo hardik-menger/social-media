@@ -47,11 +47,13 @@ class PostForm extends Component {
   }
 
   handleChange = () => {
+    console.log(this.state.checked);
     this.setState({
       checked: !this.state.checked
     });
   };
   onCheck = date => {
+    console.log(date._d);
     this.setState({ date: new Date(date._d).getTime() / 1000 });
   };
   onSubmit = e => {

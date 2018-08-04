@@ -3,12 +3,11 @@ import { connect } from "react-redux";
 import { groupPost } from "../../actions/pageaction";
 import { Link } from "react-router-dom";
 class PostConfirmation extends Component {
-  closePopUp = () => {
-    console.log("works");
-    document.getElementsByClassName("modal-backdrop")[0].style.backgroundColor =
-      "transparent";
-  };
-
+  // closePopUp = () => {
+  //   document.getElementById("close").click();
+  //   document.getElementsByClassName("modal-backdrop")[0].style.display = "none";
+  //   this.props.closePopUp();
+  // };
   removeFromList = page => {
     this.props.groupPost(page);
     if (this.props.pages.pageArray.length === 1) this.closePopUp();

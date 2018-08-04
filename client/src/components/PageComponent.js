@@ -53,12 +53,9 @@ class PageComponent extends Component {
     this.setState({ [e.target.name]: e.target.value, sortby: "search" });
   };
   addAll = () => {
-    this.closePopUp();
     this.props.groupPostToAll(this.props.pages.pages);
   };
-  closePopUp = () => {
-    document.getElementById("close").click();
-  };
+
   searchAndSort = type => {
     switch (type) {
       case "asc":
@@ -213,7 +210,7 @@ class PageComponent extends Component {
                 </button>
               </div>
               <div className="modal-body">
-                <PostConfirmation />
+                <PostConfirmation closePopUp={this.closePopUp} />
               </div>
               <div className="modal-footer">
                 <button
