@@ -210,7 +210,7 @@ class PageComponent extends Component {
                 </button>
               </div>
               <div className="modal-body">
-                <PostConfirmation closePopUp={this.closePopUp} />
+                <PostConfirmation />
               </div>
               <div className="modal-footer">
                 <button

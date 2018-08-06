@@ -58,15 +58,20 @@ class PostForm extends Component {
   };
   onSubmit = e => {
     e.preventDefault();
-
+    let unpublishedPages = [];
+    let publishedPages = [];
+    let alertmessg;
     const userData = {
       post: this.state.post
     };
     let length = this.props.pages.pageArray.length;
     let i = 0;
+    if (length === 0) {
+      this.props.history.push("/pages");
+    }
     if (!this.state.checked && this.state.image === null) {
       i = 0;
-      this.props.pages.pageArray.map(post =>
+      this.props.pages.pageArray.map((post, index) =>
         window.FB.getLoginStatus(response => {
           if (response.status === "connected") {
             window.FB.api(
@@ -78,26 +83,32 @@ class PostForm extends Component {
               },
               res => {
                 if (!res || res.error) {
-                  alert(res.error.message);
+                  alertmessg = res.error.message;
+                  unpublishedPages.push(post.global_brand_page_name);
                 } else {
                   i++;
+                  publishedPages.push(post.global_brand_page_name);
 
+                  console.log(index, length);
                   if (i === length) {
-                    alert("Posts Successfull");
+                    alert(
+                      `Posted successfully on ${publishedPages.join(", ")}`
+                    );
                   }
+
+                  if (index === length - 1)
+                    alert(`${alertmessg} ON ${unpublishedPages.join(", ")}`);
                   document.getElementsByClassName("fade")[0].style.opacity =
                     "1";
                 }
               }
             );
-          } else {
-            alert("Post Unsuccessfull Login again");
           }
         })
       );
     } else if (this.state.image !== null && this.state.date.length === 0) {
-      i = 0;
-      this.props.pages.pageArray.map(post =>
+      i = 0; // eslint-disable-next-line
+      this.props.pages.pageArray.map((post, index) => {
         window.FB.getLoginStatus(response => {
           if (response.status === "connected") {
             window.FB.api(
@@ -110,28 +121,34 @@ class PostForm extends Component {
               },
               response => {
                 if (!response || response.error) {
-                  alert(response.error.message);
+                  alertmessg = response.error.message;
+                  unpublishedPages.push(post.global_brand_page_name);
+                  console.log(index, length, alertmessg, unpublishedPages);
                 } else {
                   i++;
+                  publishedPages.push(post.global_brand_page_name);
 
                   if (i === length) {
-                    alert("Posts Successfull");
+                    alert(
+                      `Posted successfully on ${publishedPages.join(", ")}`
+                    );
                   }
+
                   document.getElementsByClassName("fade")[0].style.opacity =
                     "1";
                 }
               }
             );
           }
-        })
-      );
+        });
+      });
     } else {
       if (this.state.date.length === 0) {
         alert("Select time duration or uncheck the checkbox");
       } else {
         if (this.state.image === null) {
           i = 0;
-          this.props.pages.pageArray.map(post =>
+          this.props.pages.pageArray.map((post, index) =>
             window.FB.getLoginStatus(response => {
               if (response.status === "connected") {
                 window.FB.api(
@@ -145,24 +162,32 @@ class PostForm extends Component {
                   },
                   res => {
                     if (!res || res.error) {
-                      alert(res.error.message);
+                      alertmessg = res.error.message;
+                      unpublishedPages.push(post.global_brand_page_name);
                     } else {
                       i++;
+                      publishedPages.push(post.global_brand_page_name);
 
+                      console.log(index, length);
                       if (i === length) {
-                        alert("Posts Successfull");
+                        alert(
+                          `Posted successfully on ${publishedPages.join(", ")}`
+                        );
                       }
+
+                      if (index === length - 1)
+                        alert(
+                          `${alertmessg} ON ${unpublishedPages.join(", ")}`
+                        );
                     }
                   }
                 );
-              } else {
-                alert("Post Unsuccessfull Login again");
               }
             })
           );
         } else {
           i = 0;
-          this.props.pages.pageArray.map(post =>
+          this.props.pages.pageArray.map((post, index) =>
             window.FB.getLoginStatus(response => {
               if (response.status === "connected") {
                 window.FB.api(
@@ -180,10 +205,19 @@ class PostForm extends Component {
                       alert(response.error.message);
                     } else {
                       i++;
+                      publishedPages.push(post.global_brand_page_name);
 
+                      console.log(index, length);
                       if (i === length) {
-                        alert("Posts Successfull");
+                        alert(
+                          `Posted successfully on ${publishedPages.join(", ")}`
+                        );
                       }
+
+                      if (index === length - 1)
+                        alert(
+                          `${alertmessg} ON ${unpublishedPages.join(", ")}`
+                        );
                       document.getElementsByClassName("fade")[0].style.opacity =
                         "1";
                     }
