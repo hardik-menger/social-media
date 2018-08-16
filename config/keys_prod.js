@@ -1,4 +1,4 @@
 module.exports = {
-  secret: process.env.secret,
-  appid: process.env.secretkey
+  mongoURI: process.env.MONGOURI,
+  secretkey: process.env.secretkey
 };
