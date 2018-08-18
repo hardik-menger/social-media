@@ -109,9 +109,7 @@ class Register extends Component {
           <div className="row">
             <div className="col-md-8 m-auto">
               <h1 className="display-4 text-center">Sign Up</h1>
-              <p className="lead text-center">
-                Create your DevConnector account
-              </p>
+              <p className="lead text-center">Create your account</p>
               <form onSubmit={this.handleSubmit.bind(this)}>
                 <TextInput
                   value={this.state.name}
@@ -128,8 +126,6 @@ class Register extends Component {
                   error={errors.email}
                   placeholder="Email Address"
                   name="email"
-                  info="This site uses Gravatar so if you want a profile image, use
-                  a Gravatar email"
                 />
                 <TextInput
                   value={this.state.password}
