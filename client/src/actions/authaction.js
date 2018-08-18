@@ -37,7 +37,6 @@ export const loginuser = userdata => {
   }
 };
 export const loginapp = userdata => dispatch => {
-  console.log(userdata);
   axios
     .post("http://localhost:3001/api/users/login", userdata)
     .then(res => {
@@ -50,7 +49,6 @@ export const loginapp = userdata => dispatch => {
       //decode bearer thing
       const decoded = jwt_decode(token);
       //set current user
-      console.log(decoded);
       return dispatch({
         type: SET_APP_AUTH,
         payload: { ...decoded, token }
@@ -76,9 +74,4 @@ export const logout = () => {
   return {
     type: REMOVE_USER
   };
-};
-export const logoutapp = () => dispatch => {
-  localStorage.removeItem("jwttoken");
-  setAuthtoken(false);
-  dispatch(setCurrentUser({}));
 };

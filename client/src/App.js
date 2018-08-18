@@ -9,10 +9,23 @@ import store from "./store";
 import PostForm from "./components/forms/PostForm";
 import PrivateRoute from "./components/common/PrivateRoute";
 import PostComponent from "./components/Posts/PostComponent";
-// import jwt_decode from "jwt-decode";
-// import setAuthtoken from "./utils/setauthtoken";
+import jwt_decode from "jwt-decode";
+import setAuthtoken from "./utils/setauthtoken";
 import Login from "./components/auth/login";
 import Register from "./components/auth/register";
+import { logout, setCurrentUser } from "./actions/authaction";
+if (localStorage.jwttoken) {
+  setAuthtoken(localStorage.jwttoken);
+  const user = jwt_decode(localStorage.jwttoken);
+  store.dispatch(setCurrentUser(user));
+  //check for expired token
+  const currenttime = Date.now() / 1000;
+  if (user.exp < currenttime) {
+    //logout
+    store.dispatch(logout());
+    window.location.href = "/login";
+  }
+}
 class App extends Component {
   render() {
     return (
