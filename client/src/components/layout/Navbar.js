@@ -21,7 +21,7 @@ class Navbar extends Component {
       }
     });
   };
-  onlogout = () => {
+  onfblogout = () => {
     window.FB.logout(response => {
       console.log(response);
     });
@@ -59,7 +59,12 @@ class Navbar extends Component {
       }
     );
   };
-
+  onlogout = e => {
+    e.preventDefault();
+    console.log("test");
+    localStorage.removeItem("auth");
+    this.props.logout();
+  };
   render() {
     const modalDialog = {
       height: "30vh",
@@ -75,7 +80,23 @@ class Navbar extends Component {
       width: "100%",
       margin: "0px"
     };
+    const { appAuth } = this.props.auth;
     const authlinks = (
+      <ul className="navbar-nav ml-auto">
+        <li className="nav-item">
+          <Link to="/register" className="nav-link ">
+            Register
+          </Link>
+        </li>
+
+        <li className="nav-item">
+          <Link className="nav-link " to="/login">
+            Login <i className="fas fa-sign-in-alt" />
+          </Link>
+        </li>
+      </ul>
+    );
+    const loggedLinks = (
       <ul className="navbar-nav ml-auto">
         <li className="nav-item">
           <Link
@@ -84,9 +105,16 @@ class Navbar extends Component {
             data-toggle="modal"
             data-target="#addProfile"
           >
-            <span>
-              Add Profiles <i className="fas fa-sign-in-alt" />
-            </span>
+            <span>Add Social Logins</span>
+          </Link>
+        </li>
+        <li className="nav-item">
+          <Link
+            className="nav-link"
+            onClick={this.onlogout.bind(this)}
+            to="/login"
+          >
+            Logout
           </Link>
         </li>
       </ul>
@@ -108,14 +136,24 @@ class Navbar extends Component {
 
           <div className="collapse navbar-collapse" id="mobile-nav">
             <ul className="navbar-nav mr-auto">
-              <li className="nav-item">
+              <li
+                className="nav-item"
+                style={{ display: appAuth ? "list-item" : "none" }}
+              >
                 <Link className="nav-link" to="/pages">
-                  {" "}
+                  Add Profiles
+                </Link>
+              </li>
+              <li
+                className="nav-item"
+                style={{ display: appAuth ? "list-item" : "none" }}
+              >
+                <Link className="nav-link" to="/pages">
                   Profiles
                 </Link>
               </li>
             </ul>
-            {authlinks}
+            {appAuth ? loggedLinks : authlinks}
             <div
               className="modal fade nopadding loginboard"
               id="addProfile"
@@ -146,7 +184,7 @@ class Navbar extends Component {
                     {this.props.auth.isAuthenticated ? (
                       <button
                         className="btn btn-block btn-social btn-facebook"
-                        onClick={this.onlogout}
+                        onClick={this.onfblogout}
                       >
                         <span className="fab fa-facebook" />
                         <span> Logout from Facebook</span>

@@ -1,4 +1,4 @@
-import { SET_CURRENT_USER, SET_APP_AUTH } from "../actions/types";
+import { SET_CURRENT_USER, SET_APP_AUTH, REMOVE_USER } from "../actions/types";
 import isEmpty from "../utils/validation";
 const initialState = {
   isAuthenticated: false,
@@ -15,6 +15,8 @@ export default (state = initialState, action) => {
         isAuthenticated: !isEmpty(action.payload),
         user: action.payload
       };
+    case REMOVE_USER:
+      return {};
     case SET_APP_AUTH:
       return {
         ...state,

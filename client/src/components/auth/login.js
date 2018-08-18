@@ -35,11 +35,7 @@ class Login extends Component {
       email: this.state.email,
       password: this.state.password
     };
-    try {
-      this.props.loginapp(userData);
-    } catch (e) {
-      console.log(e);
-    }
+    this.props.loginapp(userData);
   }
 
   onChange(e) {

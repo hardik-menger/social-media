@@ -1,11 +1,16 @@
-import { GET_ERRORS, SET_CURRENT_USER, SET_APP_AUTH } from "./types";
+import {
+  GET_ERRORS,
+  SET_CURRENT_USER,
+  SET_APP_AUTH,
+  REMOVE_USER
+} from "./types";
 import axios from "axios";
 import setAuthtoken from "../utils/setauthtoken";
 import jwt_decode from "jwt-decode";
 //register user
 export const registeruser = (userdata, history) => dispatch => {
   axios
-    .post("/api/users/register", userdata)
+    .post("http://localhost:3001/api/users/register", userdata)
     .then(res => {
       history.push("/login");
     })
@@ -48,7 +53,7 @@ export const loginapp = userdata => dispatch => {
       console.log(decoded);
       return dispatch({
         type: SET_APP_AUTH,
-        payload: decoded
+        payload: { ...decoded, token }
       });
     })
     .catch(err => {
@@ -67,7 +72,10 @@ export const setCurrentUser = user => {
 
 export const logout = () => {
   localStorage.removeItem("auth");
-  return setCurrentUser({});
+  localStorage.removeItem("jwttoken");
+  return {
+    type: REMOVE_USER
+  };
 };
 export const logoutapp = () => dispatch => {
   localStorage.removeItem("jwttoken");
