@@ -9,6 +9,10 @@ import store from "./store";
 import PostForm from "./components/forms/PostForm";
 import PrivateRoute from "./components/common/PrivateRoute";
 import PostComponent from "./components/Posts/PostComponent";
+// import jwt_decode from "jwt-decode";
+// import setAuthtoken from "./utils/setauthtoken";
+import Login from "./components/auth/login";
+import Register from "./components/auth/register";
 class App extends Component {
   render() {
     return (
@@ -18,6 +22,8 @@ class App extends Component {
             <div>
               <Navbar />
               <div className="container">
+                <Route exact path="/login" component={Login} />
+                <Route exact path="/register" component={Register} />
                 <Switch>
                   <PrivateRoute exact path="/pages" component={Page} />
                 </Switch>

@@ -1,8 +1,10 @@
-import { SET_CURRENT_USER } from "../actions/types";
+import { SET_CURRENT_USER, SET_APP_AUTH } from "../actions/types";
 import isEmpty from "../utils/validation";
 const initialState = {
   isAuthenticated: false,
-  user: {}
+  user: {},
+  appAuth: false,
+  appData: {}
 };
 
 export default (state = initialState, action) => {
@@ -12,6 +14,12 @@ export default (state = initialState, action) => {
         ...state,
         isAuthenticated: !isEmpty(action.payload),
         user: action.payload
+      };
+    case SET_APP_AUTH:
+      return {
+        ...state,
+        appAuth: !isEmpty(action.payload),
+        appData: action.payload
       };
     default:
       return state;
