@@ -17,7 +17,7 @@ const validateLoginInput = require("../../validation/login");
 //@access Public
 router.get("/test", (req, res) => res.json({ msg: "users works" }));
 
-//@route GET api/users/register
+//@route post api/users/register
 //@desc register user
 //@access Public
 router.post("/register", (req, res) => {
@@ -49,7 +49,7 @@ router.post("/register", (req, res) => {
   });
 });
 
-//@route GET api/users/login
+//@route post api/users/login
 //@desc login user
 //@access Public
 router.post("/login", (req, res) => {
@@ -102,11 +102,36 @@ router.get(
   "/current",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
+    console.log(req.user);
     res.json({
       id: req.user.id,
       name: req.user.name,
       email: req.user.email
     });
+  }
+);
+
+//@route post api/users/addprofile/:type/:id
+//@desc add a profile
+//@access Private
+router.post(
+  "/add",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const type = req.params.type;
+    const id = req.params.id;
+    console.log(req.user);
+    switch (type) {
+      case "facebook":
+        console.log("facebook");
+        break;
+      case "instagram":
+        console.log("instagram");
+        break;
+      case "twitter":
+        console.log("twitter");
+        break;
+    }
   }
 );
 

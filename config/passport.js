@@ -9,19 +9,30 @@ opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.secretOrKey = keys.secretkey;
 
 module.exports = passport => {
+  passport.serializeUser(function(user, done) {
+    done(null, user.id);
+  });
+
+  passport.deserializeUser(function(id, done) {
+    User.findById(id, function(err, user) {
+      done(err, user);
+    });
+  });
   passport.use(
     new JwtStrategy(opts, (jwt_payload, done) => {
       User.findById(jwt_payload.id)
         .then(user => {
           if (user) {
-            return done(null, user);
-          } else {
-            return done(null, false);
+            const auth = {
+              id: user._id,
+              name: user.name,
+              email: user.email
+            };
+            return done(null, auth);
           }
+          return done(null, false);
         })
-        .catch(err => {
-          console.log(err);
-        });
+        .catch(err => console.log(err));
     })
   );
 };

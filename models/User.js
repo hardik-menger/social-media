@@ -13,6 +13,15 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
+  facebookprofiles: {
+    type: String
+  },
+  instagramprofiles: {
+    type: String
+  },
+  twitterprofiles: {
+    type: String
+  },
   date: {
     type: Date,
     default: Date.now
