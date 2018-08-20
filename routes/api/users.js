@@ -110,25 +110,98 @@ router.get(
   }
 );
 
-//@route post api/users/addprofile/:type/:id
+//@route post api/users/add
 //@desc add a profile
 //@access Private
 router.post(
   "/add",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    const type = req.params.type;
-    const id = req.params.id;
-    console.log(req.user);
+    const type = req.body.type;
+    const id = req.body.id;
     switch (type) {
       case "facebook":
-        console.log("facebook");
+        User.findByIdAndUpdate(
+          req.user.id,
+          { $addToSet: { facebookprofiles: { $each: [id] } } },
+          { new: true, upsert: true }
+        )
+          .then(user => {
+            res.json({ profiles: user.facebookprofiles });
+          })
+          .catch(err => res.json({ err }));
         break;
       case "instagram":
-        console.log("instagram");
+        User.findByIdAndUpdate(
+          req.user.id,
+          { $addToSet: { instagramprofiles: { $each: [id] } } },
+          { new: true, upsert: true }
+        )
+          .then(user => {
+            res.json({ profiles: user.instagramprofiles });
+          })
+          .catch(err => res.json({ err }));
         break;
       case "twitter":
-        console.log("twitter");
+        User.findByIdAndUpdate(
+          req.user.id,
+          { $addToSet: { twitterprofiles: { $each: [id] } } },
+          { new: true, upsert: true }
+        )
+          .then(user => {
+            res.json({ profiles: user.twitterprofiles });
+          })
+          .catch(err => res.json({ err }));
+        break;
+    }
+  }
+);
+
+//@route post api/users/remove
+//@desc remove a profile
+//@access Private
+router.post(
+  "/remove",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const type = req.body.type;
+    const id = req.body.id;
+    switch (type) {
+      case "facebook":
+        User.findById(req.user.id)
+          .then(user => {
+            removeIndex = user.facebookprofiles.map(id => id).indexOf(id);
+            user.facebookprofiles.splice(removeIndex, 1);
+            user
+              .save()
+              .then(user => res.json(user.facebookprofiles))
+              .catch(err => res.json(err));
+          })
+          .catch(err => res.json({ err }));
+        break;
+      case "instagram":
+        User.findById(req.user.id)
+          .then(user => {
+            removeIndex = user.instagramprofiles.map(id => id).indexOf(id);
+            user.instagramprofiles.splice(removeIndex, 1);
+            user
+              .save()
+              .then(user => res.json(user.instagramprofiles))
+              .catch(err => res.json(err));
+          })
+          .catch(err => res.json({ err }));
+        break;
+      case "twitter":
+        User.findById(req.user.id)
+          .then(user => {
+            removeIndex = user.twitterprofiles.map(id => id).indexOf(id);
+            user.twitterprofiles.splice(removeIndex, 1);
+            user
+              .save()
+              .then(user => res.json(user.twitterprofiles))
+              .catch(err => res.json(err));
+          })
+          .catch(err => res.json({ err }));
         break;
     }
   }
