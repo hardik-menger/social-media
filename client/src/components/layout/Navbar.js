@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import { loginuser, logout } from "../../actions/authaction";
+import { loginuser, logout, logoutfb } from "../../actions/authaction";
 import loadFbLoginApi from "../../FB/loadsdk";
 import "../../App.css";
 class Navbar extends Component {
@@ -25,8 +25,7 @@ class Navbar extends Component {
     window.FB.logout(response => {
       console.log(response);
     });
-    localStorage.removeItem("auth");
-    this.props.logout();
+    this.props.logoutfb();
   };
 
   componentDidMount() {
@@ -229,5 +228,5 @@ const mapStateToProps = state => {
 };
 export default connect(
   mapStateToProps,
-  { loginuser, logout }
+  { loginuser, logout, logoutfb }
 )(Navbar);

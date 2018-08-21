@@ -22,8 +22,8 @@ class PageComponent extends Component {
   }
   async statusChangeCallback() {
     const auth = JSON.parse(localStorage.getItem("auth"));
-    const { accessToken } = this.props.auth.user.authResponse;
-    const { status } = auth;
+    const { accessToken } = auth.user.authResponse;
+    const { status } = auth.user;
     if (status === "connected") {
       this.props.setpageloading();
       await fetch(

@@ -23,7 +23,16 @@ export const registeruser = (userdata, history) => dispatch => {
 };
 export const loginuser = userdata => {
   if (userdata.status === "connected") {
-    localStorage.setItem("auth", JSON.stringify(userdata));
+    const auth = JSON.parse(localStorage.auth);
+    localStorage.setItem(
+      "auth",
+      JSON.stringify({
+        appData: auth,
+        user: userdata,
+        isAuthenticated: true,
+        appAuth: true
+      })
+    );
 
     return {
       type: SET_CURRENT_USER,
@@ -48,6 +57,8 @@ export const loginapp = userdata => dispatch => {
       setAuthtoken(token);
       //decode bearer thing
       const decoded = jwt_decode(token);
+      const appData = { ...decoded, token };
+      localStorage.setItem("auth", JSON.stringify({ appData, appAuth: true }));
       //set current user
       return dispatch({
         type: SET_APP_AUTH,
@@ -74,4 +85,12 @@ export const logout = () => {
   return {
     type: REMOVE_USER
   };
+};
+export const logoutfb = () => dispatch => {
+  let auth = JSON.parse(localStorage.auth);
+  auth.isAuthenticated = false;
+  delete auth.authResponse;
+  delete auth.status;
+  localStorage.setItem("auth", JSON.stringify(auth));
+  return dispatch(setCurrentUser({}));
 };

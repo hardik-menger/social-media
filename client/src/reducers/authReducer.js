@@ -1,4 +1,9 @@
-import { SET_CURRENT_USER, SET_APP_AUTH, REMOVE_USER } from "../actions/types";
+import {
+  SET_CURRENT_USER,
+  SET_APP_AUTH,
+  REMOVE_USER,
+  FACEBOOK_LOGOUT
+} from "../actions/types";
 import isEmpty from "../utils/validation";
 const initialState = {
   isAuthenticated: false,
@@ -22,6 +27,12 @@ export default (state = initialState, action) => {
         ...state,
         appAuth: !isEmpty(action.payload),
         appData: action.payload
+      };
+    case FACEBOOK_LOGOUT:
+      return {
+        ...state,
+        isAuthenticated: false,
+        user: {}
       };
     default:
       return state;
