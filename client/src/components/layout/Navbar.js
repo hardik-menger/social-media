@@ -60,7 +60,6 @@ class Navbar extends Component {
   };
   onlogout = e => {
     e.preventDefault();
-    console.log("test");
     localStorage.removeItem("auth");
     this.props.logout();
   };
@@ -79,7 +78,7 @@ class Navbar extends Component {
       width: "100%",
       margin: "0px"
     };
-    const { appAuth } = this.props.auth;
+    const { appAuth } = JSON.parse(localStorage.auth);
     const authlinks = (
       <ul className="navbar-nav ml-auto">
         <li className="nav-item">
