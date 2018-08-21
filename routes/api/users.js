@@ -171,11 +171,15 @@ router.post(
         User.findById(req.user.id)
           .then(user => {
             removeIndex = user.facebookprofiles.map(id => id).indexOf(id);
-            user.facebookprofiles.splice(removeIndex, 1);
-            user
-              .save()
-              .then(user => res.json(user.facebookprofiles))
-              .catch(err => res.json(err));
+            if (removeIndex != -1) {
+              user.facebookprofiles.splice(removeIndex, 1);
+              user
+                .save()
+                .then(user => res.json(user.facebookprofiles))
+                .catch(err => res.json(err));
+            } else {
+              res.json({ error: "id incorrect" });
+            }
           })
           .catch(err => res.json({ err }));
         break;
@@ -183,11 +187,15 @@ router.post(
         User.findById(req.user.id)
           .then(user => {
             removeIndex = user.instagramprofiles.map(id => id).indexOf(id);
-            user.instagramprofiles.splice(removeIndex, 1);
-            user
-              .save()
-              .then(user => res.json(user.instagramprofiles))
-              .catch(err => res.json(err));
+            if (removeIndex != -1) {
+              user.instagramprofiles.splice(removeIndex, 1);
+              user
+                .save()
+                .then(user => res.json(user.instagramprofiles))
+                .catch(err => res.json(err));
+            } else {
+              res.json({ error: "id incorrect" });
+            }
           })
           .catch(err => res.json({ err }));
         break;
@@ -195,11 +203,15 @@ router.post(
         User.findById(req.user.id)
           .then(user => {
             removeIndex = user.twitterprofiles.map(id => id).indexOf(id);
-            user.twitterprofiles.splice(removeIndex, 1);
-            user
-              .save()
-              .then(user => res.json(user.twitterprofiles))
-              .catch(err => res.json(err));
+            if (removeIndex != -1) {
+              user.twitterprofiles.splice(removeIndex, 1);
+              user
+                .save()
+                .then(user => res.json(user.twitterprofiles))
+                .catch(err => res.json(err));
+            } else {
+              res.json({ error: "id incorrect" });
+            }
           })
           .catch(err => res.json({ err }));
         break;

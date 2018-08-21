@@ -14,6 +14,7 @@ import setAuthtoken from "./utils/setauthtoken";
 import Login from "./components/auth/login";
 import Register from "./components/auth/register";
 import { logout, setCurrentUser } from "./actions/authaction";
+import Profiles from "./components/Profiles/profiles";
 if (localStorage.jwttoken) {
   setAuthtoken(localStorage.jwttoken);
   const user = jwt_decode(localStorage.jwttoken);
@@ -39,6 +40,9 @@ class App extends Component {
                 <Route exact path="/register" component={Register} />
                 <Switch>
                   <PrivateRoute exact path="/pages" component={Page} />
+                </Switch>
+                <Switch>
+                  <PrivateRoute exact path="/profiles" component={Profiles} />
                 </Switch>
                 <Switch>
                   <PrivateRoute exact path="/post" component={PostForm} />

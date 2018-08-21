@@ -138,7 +138,7 @@ class Navbar extends Component {
                 className="nav-item"
                 style={{ display: appAuth ? "list-item" : "none" }}
               >
-                <Link className="nav-link" to="/pages">
+                <Link className="nav-link" to="/profiles">
                   Add Profiles
                 </Link>
               </li>
