@@ -8,6 +8,7 @@ import loadFbLoginApi from "../FB/loadsdk";
 import PostConfirmation from "./PostConfirmation/PostConfirmation";
 import { groupPostToAll } from "../actions/pageaction";
 import "./materialInput.css";
+import axios from "axios";
 class PageComponent extends Component {
   constructor() {
     super();
@@ -20,19 +21,61 @@ class PageComponent extends Component {
       this.statusChangeCallback();
     });
   }
+  makeSection(data) {
+    // let fbadded = [];
+    // let fbnotadded = [];
+    // let instaadded = [];
+    // let instanotadded = [];
+    // let twitteradded = [];
+    // let twitternotadded = [];
+    let facebookprofiles = [];
+    let instagramprofiles = [];
+    let twitterprofiles = [];
+    let added = [];
+    let notadded = [];
+    axios
+      .get("/api/users/profiles")
+      .then(user => {
+        //got page ids foor apps
+        facebookprofiles = user.data.facebookprofiles;
+        instagramprofiles = user.data.instagramprofiles;
+        twitterprofiles = user.data.twitterprofiles;
+        //sort into added and not added
+        data.forEach((x, index, array) => {
+          (facebookprofiles.indexOf(x.id) !== -1 ? added : notadded).push({
+            ...x,
+            type: "facebook"
+          });
+          // (instagramprofiles.indexOf(x.id) !== -1 ? added : notadded).push({
+          //   ...x,
+          //   type: "instagram"
+          // });
+          // (twitterprofiles.indexOf(x.id) !== -1 ? added : notadded).push({
+          //   ...x,
+          //   type: "twitter"
+          // });
+          if (index === array.length - 1) {
+            //   console.log(facebookprofiles, instagramprofiles, twitterprofiles);
+            this.setState({ added: { data: { added } }, notadded });
+            this.props.getpages(added);
+          }
+        });
+      })
+      .catch(err => console.log(err));
+  }
   async statusChangeCallback() {
     const auth = JSON.parse(localStorage.getItem("auth"));
     const { accessToken } = auth.user.authResponse;
     const { status } = auth.user;
     if (status === "connected") {
-      this.props.setpageloading();
       await fetch(
         `https://graph.facebook.com/v3.0/me/accounts?access_token=${accessToken}&debug=all&fields=id%2C%20global_brand_page_name%2C%20about%2C%20category%2C%20category_list%2C%20description%2C%20username%2C%20access_token&format=json&method=get&pretty=0&suppress_http_code=1`
       )
         .then(resp => resp.json()) // Transform the data into json
         .then(data => {
           if (data.error === undefined) {
-            this.props.getpages(data);
+            this.setState({ all: data.data });
+            this.makeSection(data.data);
           } else {
             window.FB.login(response => {
               if (response.authResponse) {
@@ -40,7 +83,7 @@ class PageComponent extends Component {
                 this.statusChangeCallback();
               }
             });
-            this.props.getpages(data);
+            this.setState({ all: data.data });
           }
         });
     } else if (status === "not_authorized") {
@@ -106,8 +149,7 @@ class PageComponent extends Component {
       margin: "0px"
     };
     let pages;
-
-    if (this.props.pages.pages) {
+    if (this.props.pages.pages.length !== 0) {
       let fetchedPages = this.searchAndSort(this.state.sortby);
       pages = fetchedPages.map((page, index) => {
         return <SinglePage page={page} key={index} />;

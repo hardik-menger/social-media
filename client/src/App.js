@@ -35,7 +35,7 @@ class App extends Component {
           <Router>
             <div>
               <Navbar />
-              <div className="container">
+              <div className="container" style={{ minHeight: "50vh" }}>
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/register" component={Register} />
                 <Switch>

@@ -8,7 +8,7 @@ import {
 export const getpages = pages => {
   return {
     type: GET_PAGES,
-    payload: pages.data
+    payload: pages
   };
 };
 export const groupPost = set => {

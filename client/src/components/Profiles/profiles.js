@@ -10,7 +10,7 @@ import axios from "axios";
 class Profiles extends Component {
   constructor() {
     super();
-    this.state = { sortby: "1", search: "" };
+    this.state = { sortby: "1", search: "", all: [], added: [], notadded: [] };
   }
   addedAll;
   componentDidMount() {
@@ -19,15 +19,17 @@ class Profiles extends Component {
     });
   }
   makeSection(data) {
-    let fbadded = [];
-    let fbnotadded = [];
-    let instaadded = [];
-    let instanotadded = [];
-    let twitteradded = [];
-    let twitternotadded = [];
+    // let fbadded = [];
+    // let fbnotadded = [];
+    // let instaadded = [];
+    // let instanotadded = [];
+    // let twitteradded = [];
+    // let twitternotadded = [];
     let facebookprofiles = [];
     let instagramprofiles = [];
     let twitterprofiles = [];
+    let added = [];
+    let notadded = [];
     axios
       .get("/api/users/profiles")
       .then(user => {
@@ -36,18 +38,24 @@ class Profiles extends Component {
         instagramprofiles = user.data.instagramprofiles;
         twitterprofiles = user.data.twitterprofiles;
         //sort into added and not added
-        data.forEach(x => {
-          (facebookprofiles.indexOf(x.id) !== -1 ? fbadded : fbnotadded).push(
-            x
-          );
-          (instagramprofiles.indexOf(x.id) !== -1
-            ? instaadded
-            : instanotadded
-          ).push(x);
-          (twitterprofiles.indexOf(x.id) !== -1
-            ? twitteradded
-            : twitternotadded
-          ).push(x);
+        data.forEach((x, index, array) => {
+          (facebookprofiles.indexOf(x.id) !== -1 ? added : notadded).push({
+            ...x,
+            type: "facebook"
+          });
+          // (instagramprofiles.indexOf(x.id) !== -1 ? added : notadded).push({
+          //   ...x,
+          //   type: "instagram"
+          // });
+          // (twitterprofiles.indexOf(x.id) !== -1 ? added : notadded).push({
+          //   ...x,
+          //   type: "twitter"
+          // });
+          if (index === array.length - 1) {
+            //   console.log(facebookprofiles, instagramprofiles, twitterprofiles);
+            this.setState({ added: { data: { added } }, notadded });
+            this.props.getpages(added);
+          }
         });
       })
       .catch(err => console.log(err));
@@ -57,14 +65,13 @@ class Profiles extends Component {
     const { accessToken } = auth.user.authResponse;
     const { status } = auth.user;
     if (status === "connected") {
-      this.props.setpageloading();
       await fetch(
         `https://graph.facebook.com/v3.0/me/accounts?access_token=${accessToken}&debug=all&fields=id%2C%20global_brand_page_name%2C%20about%2C%20category%2C%20category_list%2C%20description%2C%20username%2C%20access_token&format=json&method=get&pretty=0&suppress_http_code=1`
       )
         .then(resp => resp.json()) // Transform the data into json
         .then(data => {
           if (data.error === undefined) {
-            this.props.getpages(data);
+            this.setState({ all: data.data });
             this.makeSection(data.data);
           } else {
             window.FB.login(response => {
@@ -73,7 +80,7 @@ class Profiles extends Component {
                 this.statusChangeCallback();
               }
             });
-            this.props.getpages(data);
+            this.setState({ all: data.data });
           }
         });
     } else if (status === "not_authorized") {
@@ -87,10 +94,10 @@ class Profiles extends Component {
     this.setState({ [e.target.name]: e.target.value, sortby: "search" });
   };
 
-  searchAndSort = type => {
+  searchAndSort = (type, data) => {
     switch (type) {
       case "asc":
-        return this.props.pages.pages.sort((a, b) => {
+        return data.sort((a, b) => {
           var nameA = a.global_brand_page_name.toLowerCase(),
             nameB = b.global_brand_page_name.toLowerCase();
           if (nameA < nameB) return -1;
@@ -98,7 +105,7 @@ class Profiles extends Component {
           return 0;
         });
       case "desc":
-        return this.props.pages.pages.sort((a, b) => {
+        return data.sort((a, b) => {
           var nameA = a.global_brand_page_name.toLowerCase(),
             nameB = b.global_brand_page_name.toLowerCase();
           if (nameA > nameB) return -1;
@@ -107,7 +114,7 @@ class Profiles extends Component {
         });
       case "search":
         let searched;
-        searched = this.props.pages.pages.filter(obj => {
+        searched = data.filter(obj => {
           return (
             obj.global_brand_page_name
               .toLowerCase()
@@ -117,14 +124,14 @@ class Profiles extends Component {
         return searched;
 
       default:
-        return this.props.pages.pages;
+        return data;
     }
   };
   render() {
     let pages;
 
-    if (this.props.pages.pages) {
-      let fetchedPages = this.searchAndSort(this.state.sortby);
+    if (this.state.all.length !== 0) {
+      let fetchedPages = this.searchAndSort(this.state.sortby, this.state.all);
       pages = fetchedPages.map((page, index) => {
         return <Profile page={page} key={index} />;
       });
@@ -178,17 +185,6 @@ class Profiles extends Component {
           </div>
         </div>
         <div style={{ display: "flex", flexWrap: "wrap" }}> {pages}</div>
-        <div className="d-flex justify-content-end">
-          <button
-            type="button"
-            className="btn btn-info btn-md "
-            data-toggle="modal"
-            data-target="#myModal"
-            disabled={this.props.pages.pageArray.length === 0}
-          >
-            Confirm Pages
-          </button>
-        </div>
       </div>
     );
   }
