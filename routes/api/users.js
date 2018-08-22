@@ -110,6 +110,21 @@ router.get(
   }
 );
 
+//@route GET api/users/profiles
+//@desc return current user
+//@access Private
+router.get(
+  "/profiles",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    User.findById(req.user.id)
+      .then(user => {
+        res.json(user);
+      })
+      .catch(err => res.json({ err }));
+  }
+);
+
 //@route post api/users/add
 //@desc add a profile
 //@access Private

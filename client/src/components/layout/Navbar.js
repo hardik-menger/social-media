@@ -78,7 +78,15 @@ class Navbar extends Component {
       width: "100%",
       margin: "0px"
     };
-    const { appAuth } = JSON.parse(localStorage.auth);
+    let appAuth;
+    if (!localStorage.getItem("auth") == null) appAuth = false;
+    if (localStorage.getItem("auth") != null) {
+      JSON.parse(localStorage.getItem("auth")).appAuth
+        ? (appAuth = true)
+        : (appAuth = false);
+    } else {
+      appAuth = false;
+    }
     const authlinks = (
       <ul className="navbar-nav ml-auto">
         <li className="nav-item">

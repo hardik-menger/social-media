@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import axios from "axios";
 // import { groupPost } from "../actions/pageaction";
 class Profile extends Component {
   constructor(props) {
@@ -19,7 +20,16 @@ class Profile extends Component {
       })
       .catch(err => console.log(err));
   }
-
+  addToProfiles(type, id) {
+    axios
+      .post("/api/users/add", { type, id })
+      .then(res => {
+        console.log(res.data);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
   render() {
     return (
       <div
@@ -43,7 +53,14 @@ class Profile extends Component {
           <p className="card-text">{this.props.page.category}</p>
           <div className="checkbox">
             <label>
-              <button className="btn btn-primary btn-sm">Add</button>
+              <button
+                className="btn btn-primary btn-sm"
+                onClick={() =>
+                  this.addToProfiles("facebook", this.props.page.id)
+                }
+              >
+                Add
+              </button>
             </label>
           </div>
         </div>

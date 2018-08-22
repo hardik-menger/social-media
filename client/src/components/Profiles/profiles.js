@@ -6,6 +6,7 @@ import Spinner from "../common/spinner";
 import loadFbLoginApi from "../../FB/loadsdk";
 import Profile from "./profile";
 import "../materialInput.css";
+import axios from "axios";
 class Profiles extends Component {
   constructor() {
     super();
@@ -16,6 +17,40 @@ class Profiles extends Component {
     Promise.resolve(loadFbLoginApi()).then(() => {
       this.statusChangeCallback();
     });
+  }
+  makeSection(data) {
+    let fbadded = [];
+    let fbnotadded = [];
+    let instaadded = [];
+    let instanotadded = [];
+    let twitteradded = [];
+    let twitternotadded = [];
+    let facebookprofiles = [];
+    let instagramprofiles = [];
+    let twitterprofiles = [];
+    axios
+      .get("/api/users/profiles")
+      .then(user => {
+        //got page ids foor apps
+        facebookprofiles = user.data.facebookprofiles;
+        instagramprofiles = user.data.instagramprofiles;
+        twitterprofiles = user.data.twitterprofiles;
+        //sort into added and not added
+        data.forEach(x => {
+          (facebookprofiles.indexOf(x.id) !== -1 ? fbadded : fbnotadded).push(
+            x
+          );
+          (instagramprofiles.indexOf(x.id) !== -1
+            ? instaadded
+            : instanotadded
+          ).push(x);
+          (twitterprofiles.indexOf(x.id) !== -1
+            ? twitteradded
+            : twitternotadded
+          ).push(x);
+        });
+      })
+      .catch(err => console.log(err));
   }
   async statusChangeCallback() {
     const auth = JSON.parse(localStorage.getItem("auth"));
@@ -30,6 +65,7 @@ class Profiles extends Component {
         .then(data => {
           if (data.error === undefined) {
             this.props.getpages(data);
+            this.makeSection(data.data);
           } else {
             window.FB.login(response => {
               if (response.authResponse) {
@@ -46,6 +82,7 @@ class Profiles extends Component {
       alert("Please log into this facebook.");
     }
   }
+
   onChange = e => {
     this.setState({ [e.target.name]: e.target.value, sortby: "search" });
   };

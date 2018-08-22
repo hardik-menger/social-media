@@ -19,7 +19,7 @@ class PostComponent extends Component {
   }
   async statusChangeCallback() {
     const auth = JSON.parse(localStorage.getItem("auth"));
-    const { status } = auth;
+    const { status } = auth.user;
     if (status === "connected") {
       await fetch(
         `https://graph.facebook.com/v3.0/${
@@ -50,7 +50,10 @@ class PostComponent extends Component {
           this.props.match.params.token
         }&fields=picture,id,created_time,story,message&debug=all&format=json&is_published=true&method=get&pretty=0&suppress_http_code=1`
       ).then(data =>
-        data.json().then(d => this.setState({ published: d.data }))
+        data.json().then(d => {
+          console.log(d.data);
+          this.setState({ published: d.data });
+        })
       );
     }
   }
