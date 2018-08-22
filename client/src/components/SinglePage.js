@@ -23,10 +23,6 @@ class SinglePost extends Component {
       })
       .catch(err => console.log(err));
   }
-  toggleAdd(page) {
-    this.setState({ added: !this.state.added });
-    this.props.groupPost(page);
-  }
   findIfAlreadyAdded(pageid) {
     if (
       this.props.pages.pageArray.filter(
