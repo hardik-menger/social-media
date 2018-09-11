@@ -34,6 +34,10 @@ class SinglePost extends Component {
       return false;
     }
   }
+  toggleAdd(page) {
+    this.setState({ added: !this.state.added });
+    this.props.groupPost(page);
+  }
   render() {
     const add = (
       <span>
