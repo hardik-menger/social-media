@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import axios from "axios";
+
 // import { groupPost } from "../actions/pageaction";
 class Profile extends Component {
   constructor(props) {
@@ -21,16 +21,36 @@ class Profile extends Component {
       .catch(err => console.log(err));
   }
   addToProfiles(type, id) {
-    axios
-      .post("/api/users/add", { type, id })
-      .then(res => {
-        console.log(res.data);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+this.props.addProfile(type,id)
+  }
+  removeFromProfiles(type, id) {
+this.props.removeProfile(type, id)
   }
   render() {
+    let AddBtn=(<div className="checkbox">
+    <label>
+      <button
+        className="btn btn-primary btn-sm"
+        onClick={() =>
+          this.addToProfiles("facebook", this.props.page.id)
+        }
+      >
+        Add
+      </button>
+    </label>
+  </div>);
+  let DelBtn=(          <div className="checkbox">
+  <label>
+    <button
+      className="btn btn-danger btn-sm"
+      onClick={() =>
+        this.removeFromProfiles("facebook", this.props.page.id)
+      }
+    >
+      Remove
+    </button>
+  </label>
+</div>)
     return (
       <div
         className="card text-center"
@@ -51,18 +71,7 @@ class Profile extends Component {
             {this.props.page.global_brand_page_name || "No title"}
           </h5>
           <p className="card-text">{this.props.page.category}</p>
-          <div className="checkbox">
-            <label>
-              <button
-                className="btn btn-primary btn-sm"
-                onClick={() =>
-                  this.addToProfiles("facebook", this.props.page.id)
-                }
-              >
-                Add
-              </button>
-            </label>
-          </div>
+          {this.props.status==="1"?DelBtn: AddBtn}
         </div>
       </div>
     );

@@ -22,12 +22,6 @@ class PageComponent extends Component {
     });
   }
   makeSection(data) {
-    // let fbadded = [];
-    // let fbnotadded = [];
-    // let instaadded = [];
-    // let instanotadded = [];
-    // let twitteradded = [];
-    // let twitternotadded = [];
     let facebookprofiles = [];
     let instagramprofiles = [];
     let twitterprofiles = [];
@@ -46,16 +40,7 @@ class PageComponent extends Component {
             ...x,
             type: "facebook"
           });
-          // (instagramprofiles.indexOf(x.id) !== -1 ? added : notadded).push({
-          //   ...x,
-          //   type: "instagram"
-          // });
-          // (twitterprofiles.indexOf(x.id) !== -1 ? added : notadded).push({
-          //   ...x,
-          //   type: "twitter"
-          // });
           if (index === array.length - 1) {
-            //   console.log(facebookprofiles, instagramprofiles, twitterprofiles);
             this.setState({ added: { data: { added } }, notadded });
             this.props.getpages(added);
           }

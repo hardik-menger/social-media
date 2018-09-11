@@ -53,7 +53,6 @@ class PostForm extends Component {
     });
   };
   onCheck = date => {
-    console.log(date._d);
     this.setState({ date: new Date(date._d).getTime() / 1000 });
   };
   onSubmit = e => {
@@ -96,8 +95,7 @@ class PostForm extends Component {
                     );
                   }
 
-                  if (index === length - 1)
-                    alert(`${alertmessg} ON ${unpublishedPages.join(", ")}`);
+             
                   document.getElementsByClassName("fade")[0].style.opacity =
                     "1";
                 }
@@ -123,7 +121,7 @@ class PostForm extends Component {
                 if (!response || response.error) {
                   alertmessg = response.error.message;
                   unpublishedPages.push(post.global_brand_page_name);
-                  console.log(index, length, alertmessg, unpublishedPages);
+                  alert(`${alertmessg} Error occured while posting to ${post.global_brand_page_name}`);
                 } else {
                   i++;
                   publishedPages.push(post.global_brand_page_name);
@@ -164,21 +162,19 @@ class PostForm extends Component {
                     if (!res || res.error) {
                       alertmessg = res.error.message;
                       unpublishedPages.push(post.global_brand_page_name);
+                      alert(`${alertmessg} Error occured while posting to ${post.global_brand_page_name}`);
                     } else {
                       i++;
                       publishedPages.push(post.global_brand_page_name);
-
-                      console.log(index, length);
                       if (i === length) {
                         alert(
                           `Posted successfully on ${publishedPages.join(", ")}`
                         );
                       }
 
-                      if (index === length - 1)
-                        alert(
-                          `${alertmessg} ON ${unpublishedPages.join(", ")}`
-                        );
+                 
+                      document.getElementsByClassName("fade")[0].style.opacity =
+                      "1";
                     }
                   }
                 );
@@ -202,12 +198,11 @@ class PostForm extends Component {
                   },
                   response => {
                     if (!response || response.error) {
-                      alert(response.error.message);
+                      alertmessg = response.error.message;
+                      alert(`${alertmessg} Error occured while posting to ${post.global_brand_page_name}`);
                     } else {
                       i++;
                       publishedPages.push(post.global_brand_page_name);
-
-                      console.log(index, length);
                       if (i === length) {
                         alert(
                           `Posted successfully on ${publishedPages.join(", ")}`
@@ -215,9 +210,7 @@ class PostForm extends Component {
                       }
 
                       if (index === length - 1)
-                        alert(
-                          `${alertmessg} ON ${unpublishedPages.join(", ")}`
-                        );
+                
                       document.getElementsByClassName("fade")[0].style.opacity =
                         "1";
                     }

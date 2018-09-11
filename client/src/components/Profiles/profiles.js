@@ -7,10 +7,11 @@ import loadFbLoginApi from "../../FB/loadsdk";
 import Profile from "./profile";
 import "../materialInput.css";
 import axios from "axios";
+import { relative } from "path";
 class Profiles extends Component {
   constructor() {
     super();
-    this.state = { sortby: "1", search: "", all: [], added: [], notadded: [] };
+    this.state = { sortby: "1", search: "", all: [], added: [], notadded: [] ,loading:false};
   }
   addedAll;
   componentDidMount() {
@@ -53,8 +54,9 @@ class Profiles extends Component {
           // });
           if (index === array.length - 1) {
             //   console.log(facebookprofiles, instagramprofiles, twitterprofiles);
-            this.setState({ added: { data: { added } }, notadded });
+            this.setState({ added , notadded });
             this.props.getpages(added);
+            this.setState({loading:false});
           }
         });
       })
@@ -81,6 +83,7 @@ class Profiles extends Component {
               }
             });
             this.setState({ all: data.data });
+            this.makeSection(data.data);
           }
         });
     } else if (status === "not_authorized") {
@@ -127,22 +130,50 @@ class Profiles extends Component {
         return data;
     }
   };
+  addProfile=(type, id)=> {
+    this.setState({loading:true});
+    axios
+      .post("/api/users/add", { type, id })
+      .then(res => {
+        this.makeSection(this.state.all)
+      })
+      .catch(err => {
+        console.log(err);
+      });
+      
+  }
+  removeProfile=(type, id) =>{
+    this.setState({loading:true});
+    axios
+      .post("/api/users/remove", { type, id })
+      .then(res => {
+        this.makeSection(this.state.all)
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
   render() {
-    let pages;
+    let AddedPages,NotAddedPages;
 
     if (this.state.all.length !== 0) {
-      let fetchedPages = this.searchAndSort(this.state.sortby, this.state.all);
-      pages = fetchedPages.map((page, index) => {
-        return <Profile page={page} key={index} />;
+      let added = this.searchAndSort(this.state.sortby, this.state.added);
+      let notadded = this.searchAndSort(this.state.sortby, this.state.notadded);
+      AddedPages = added.map((page, index) => {
+        return <Profile page={page} key={index} status="1" addProfile={this.addProfile} removeProfile={this.removeProfile}  />;
+      });
+      NotAddedPages = notadded.map((page, index) => {
+        return <Profile page={page} key={index} status="0" addProfile={this.addProfile} removeProfile={this.removeProfile}  />;
       });
     } else {
-      pages = <Spinner />;
+      AddedPages = <Spinner />;
+      NotAddedPages = <Spinner />;
     }
 
     return (
       <div>
         <div className="d-flex justify-content-between">
-          <div className="dropdown show">
+          <div className="dropdown show"> 
             <p
               className="btn btn-sm dropdown-toggle "
               role="button"
@@ -184,7 +215,8 @@ class Profiles extends Component {
             <label className="materiallabel">Search</label>
           </div>
         </div>
-        <div style={{ display: "flex", flexWrap: "wrap" }}> {pages}</div>
+        <h3 className="text-muted">Facebook</h3>
+        <div style={{ display: "flex", flexWrap: "wrap" }}> {this.state.loading?<Spinner style={{padding:"20%"}}/>:[...AddedPages,NotAddedPages]}</div>
       </div>
     );
   }
