@@ -11,9 +11,7 @@ class Profile extends Component {
   }
   componentDidMount() {
     fetch(
-      `https://graph.facebook.com/v3.0/${
-        this.props.page.id
-      }/picture?type=large&width=300`
+      `https://graph.facebook.com/v3.0/${this.props.page.id}/picture?type=small`
     )
       .then(data => {
         this.setState({ profile_pic: data.url.toString() });
@@ -21,45 +19,47 @@ class Profile extends Component {
       .catch(err => console.log(err));
   }
   addToProfiles(type, id) {
-this.props.addProfile(type,id)
+    this.props.addProfile(type, id);
   }
   removeFromProfiles(type, id) {
-this.props.removeProfile(type, id)
+    this.props.removeProfile(type, id);
   }
   render() {
-    let AddBtn=(<div className="checkbox">
-    <label>
-      <button
-        className="btn btn-primary btn-sm"
-        onClick={() =>
-          this.addToProfiles("facebook", this.props.page.id)
-        }
-      >
-        Add
-      </button>
-    </label>
-  </div>);
-  let DelBtn=(          <div className="checkbox">
-  <label>
-    <button
-      className="btn btn-danger btn-sm"
-      onClick={() =>
-        this.removeFromProfiles("facebook", this.props.page.id)
-      }
-    >
-      Remove
-    </button>
-  </label>
-</div>)
+    let AddBtn = (
+      <div className="checkbox m-auto ">
+        <label>
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={() => this.addToProfiles("facebook", this.props.page.id)}
+          >
+            Add
+          </button>
+        </label>
+      </div>
+    );
+    let DelBtn = (
+      <div className="checkbox m-auto ">
+        <label>
+          <button
+            className="btn btn-danger btn-sm"
+            onClick={() =>
+              this.removeFromProfiles("facebook", this.props.page.id)
+            }
+          >
+            Remove
+          </button>
+        </label>
+      </div>
+    );
     return (
       <div
-        className="card text-center"
-        style={{ width: "200px", margin: "10px" }}
+        className="card d-flex flex-row p-2 ml-auto mr-auto"
+        style={{ width: "100%", margin: "10px", maxWidth: "500px" }}
       >
         <div
           style={{
-            marginTop: "10px",
-            height: "150px",
+            height: "65px",
+            width: "65px",
             backgroundRepeat: "none",
             backgroundImage: `url(${this.state.profile_pic})`,
             backgroundPosition: `center`,
@@ -71,8 +71,8 @@ this.props.removeProfile(type, id)
             {this.props.page.global_brand_page_name || "No title"}
           </h5>
           <p className="card-text">{this.props.page.category}</p>
-          {this.props.status==="1"?DelBtn: AddBtn}
-        </div>
+        </div>{" "}
+        {this.props.status === "1" ? DelBtn : AddBtn}
       </div>
     );
   }

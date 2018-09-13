@@ -78,14 +78,18 @@ class Navbar extends Component {
       width: "100%",
       margin: "0px"
     };
-    let appAuth;
+    let appAuth, socialAuth;
     if (!localStorage.getItem("auth") == null) appAuth = false;
     if (localStorage.getItem("auth") != null) {
       JSON.parse(localStorage.getItem("auth")).appAuth
         ? (appAuth = true)
         : (appAuth = false);
+      JSON.parse(localStorage.getItem("auth")).isAuthenticated
+        ? (socialAuth = true)
+        : (socialAuth = false);
     } else {
       appAuth = false;
+      socialAuth = false;
     }
     const authlinks = (
       <ul className="navbar-nav ml-auto">
@@ -102,28 +106,51 @@ class Navbar extends Component {
         </li>
       </ul>
     );
-    const loggedLinks = (
-      <ul className="navbar-nav ml-auto">
-        <li className="nav-item">
-          <Link
-            to="/"
-            className="nav-link "
-            data-toggle="modal"
-            data-target="#addProfile"
-          >
-            <span>Add Social Logins</span>
+    const profileActions = (
+      <ul className="navbar-nav ">
+        <li
+          className="nav-item"
+          style={{ display: appAuth ? "list-item" : "none" }}
+        >
+          <Link className="nav-link" to="/profiles">
+            Add Profiles
           </Link>
         </li>
-        <li className="nav-item">
-          <Link
-            className="nav-link"
-            onClick={this.onlogout.bind(this)}
-            to="/login"
-          >
-            Logout
+        <li
+          className="nav-item"
+          style={{ display: appAuth ? "list-item" : "none" }}
+        >
+          <Link className="nav-link" to="/pages">
+            Profiles
           </Link>
         </li>
       </ul>
+    );
+    const loggedLinks = (
+      <div className="d-flex justify-content-between" style={{ width: "100%" }}>
+        {socialAuth ? profileActions : null}
+        <ul className={socialAuth ? "navbar-nav" : "navbar-nav ml-auto"}>
+          <li className="nav-item">
+            <Link
+              to="/"
+              className="nav-link "
+              data-toggle="modal"
+              data-target="#addProfile"
+            >
+              <span>Add Social Logins</span>
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link
+              className="nav-link"
+              onClick={this.onlogout.bind(this)}
+              to="/login"
+            >
+              Logout
+            </Link>
+          </li>
+        </ul>
+      </div>
     );
     return (
       <nav className="navbar navbar-expand-sm navbar-dark bg-dark mb-4">
@@ -141,24 +168,6 @@ class Navbar extends Component {
           </button>
 
           <div className="collapse navbar-collapse" id="mobile-nav">
-            <ul className="navbar-nav mr-auto">
-              <li
-                className="nav-item"
-                style={{ display: appAuth ? "list-item" : "none" }}
-              >
-                <Link className="nav-link" to="/profiles">
-                  Add Profiles
-                </Link>
-              </li>
-              <li
-                className="nav-item"
-                style={{ display: appAuth ? "list-item" : "none" }}
-              >
-                <Link className="nav-link" to="/pages">
-                  Profiles
-                </Link>
-              </li>
-            </ul>
             {appAuth ? loggedLinks : authlinks}
             <div
               className="modal fade nopadding loginboard"
