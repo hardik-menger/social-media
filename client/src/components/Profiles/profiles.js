@@ -237,15 +237,14 @@ class Profiles extends Component {
             <label className="materiallabel">Search</label>
           </div>
         </div>
-        <h3 className="text-muted">Facebook</h3>
-        <div className="d-flex flex-wrap flex-column">
-          {" "}
-          {this.state.loading ? (
-            <Spinner style={{ padding: "20%" }} />
-          ) : (
-            [...AddedPages, NotAddedPages]
-          )}
-        </div>
+        <h3 className="text-muted text-center">Facebook Profiles</h3>{" "}
+        {this.state.loading ? (
+          <Spinner style={{ padding: "20%" }} style={{ height: "60vh" }} />
+        ) : (
+          <div className="d-flex flex-wrap flex-column">
+            {[...NotAddedPages, AddedPages]}{" "}
+          </div>
+        )}
       </div>
     );
   }

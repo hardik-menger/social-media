@@ -63,6 +63,20 @@ class Navbar extends Component {
     localStorage.removeItem("auth");
     this.props.logout();
   };
+  instaLogin = () => {
+    fetch(`http://localhost:3001/api/twitter/request-token`)
+      // .then(res =>
+      //   res.json().then(data => {
+      //     console.log(data);
+      //     window.location = data;
+      //   })
+      // );
+      .then(res =>
+        res.json().then(url => {
+          window.open(url.url);
+        })
+      );
+  };
   render() {
     const modalDialog = {
       height: "30vh",
@@ -213,7 +227,10 @@ class Navbar extends Component {
                         <span> Login with Facebook</span>
                       </button>
                     )}
-                    <button className="btn btn-block btn-social btn-instagram">
+                    <button
+                      className="btn btn-block btn-social btn-instagram"
+                      onClick={this.instaLogin}
+                    >
                       <i className="fab fa-instagram" /> Sign in with Instagram
                     </button>
                     <button className="btn btn-block btn-social btn-twitter">

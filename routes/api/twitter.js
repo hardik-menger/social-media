@@ -1,7 +1,53 @@
 const express = require("express");
 const router = express.Router();
-//@route GET api/users/test
+const Twitter = require("node-twitter-api");
+const config = require("../../config/keys");
+var _requestSecret;
+var twitter = new Twitter({
+  consumerKey: config.twitterConsumerkey,
+  consumerSecret: config.twitterConsumerSecret,
+  callback: "http://localhost:3000"
+});
+
+//@route GET api/twitter/test
 //@desc Tests users route
 //@access Public
 router.get("/test", (req, res) => res.json({ msg: "users works" }));
+
+//@route GET api/twitter/request-token
+//@desc get request token
+//@access Public
+router.get("/request-token", (req, res) => {
+  twitter.getRequestToken((err, requestToken, requestSecret) => {
+    if (err) res.status(500).send(err);
+    else {
+      _requestSecret = requestSecret;
+
+      res.json({
+        url:
+          "https://api.twitter.com/oauth/authenticate?oauth_token=" +
+          requestToken
+      });
+    }
+  });
+});
+
+router.get("/access-token", function(req, res) {
+  var requestToken = req.query.oauth_token,
+    verifier = req.query.oauth_verifier;
+
+  twitter.getAccessToken(requestToken, _requestSecret, verifier, function(
+    err,
+    accessToken,
+    accessSecret
+  ) {
+    if (err) res.status(500).send(err);
+    else
+      twitter.verifyCredentials(accessToken, accessSecret, function(err, user) {
+        if (err) res.status(500).send(err);
+        else res.send(user);
+      });
+  });
+});
+
 module.exports = router;
