@@ -73,7 +73,11 @@ class Navbar extends Component {
       // );
       .then(res =>
         res.json().then(url => {
-          window.open(url.url);
+          window.open(
+            url.url,
+            "_blank",
+            "toolbar=yes,scrollbars=yes,resizable=yes,left=500,width=400,height=400"
+          );
         })
       );
   };
@@ -227,13 +231,13 @@ class Navbar extends Component {
                         <span> Login with Facebook</span>
                       </button>
                     )}
-                    <button
-                      className="btn btn-block btn-social btn-instagram"
-                      onClick={this.instaLogin}
-                    >
+                    <button className="btn btn-block btn-social btn-instagram">
                       <i className="fab fa-instagram" /> Sign in with Instagram
                     </button>
-                    <button className="btn btn-block btn-social btn-twitter">
+                    <button
+                      className="btn btn-block btn-social btn-twitter"
+                      onClick={this.instaLogin}
+                    >
                       <i className="fab fa-twitter" /> Sign in with Twitter
                     </button>
                   </div>

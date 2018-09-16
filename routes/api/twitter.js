@@ -6,7 +6,7 @@ var _requestSecret;
 var twitter = new Twitter({
   consumerKey: config.twitterConsumerkey,
   consumerSecret: config.twitterConsumerSecret,
-  callback: "http://localhost:3000"
+  callback: "http://localhost:3001/api/twitter/access-token"
 });
 
 //@route GET api/twitter/test
@@ -32,6 +32,9 @@ router.get("/request-token", (req, res) => {
   });
 });
 
+//@route GET api/twitter/access-token
+//@desc callback
+//@access Public
 router.get("/access-token", function(req, res) {
   var requestToken = req.query.oauth_token,
     verifier = req.query.oauth_verifier;
@@ -42,12 +45,25 @@ router.get("/access-token", function(req, res) {
     accessSecret
   ) {
     if (err) res.status(500).send(err);
-    else
-      twitter.verifyCredentials(accessToken, accessSecret, function(err, user) {
-        if (err) res.status(500).send(err);
-        else res.send(user);
-      });
+    else {
+      req.query.accessToken = accessToken;
+      req.query.accessSecret = accessSecret;
+      res.send("<script>window.close()</script>");
+    }
   });
+});
+
+//@route GET api/twitter/credentials
+//@desc get access token and secret
+//@access Public
+router.get("/credentials", (req, res) => {
+  if (req.query.accessSecret && req.query.accessToken) {
+    res.json(req.query);
+  } else {
+    res.json({
+      success: false
+    });
+  }
 });
 
 module.exports = router;
