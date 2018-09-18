@@ -6,43 +6,44 @@ var app = express();
 const mongoose = require("mongoose");
 const passport = require("passport");
 var session = require("express-session");
-
 //routes
 const users = require("./routes/api/users");
 const fb = require("./routes/api/fb");
 const instagram = require("./routes/api/instagram");
 const twitter = require("./routes/api/twitter");
 
-//bodyparser middleware
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-app.use(cors());
-
 //mongodb
 const db = require("./config/keys").mongoURI;
+
 //connect
 mongoose
   .connect(db)
   .then(() => console.log("connected  to database"))
   .catch(err => console.log("err occured in connecting " + err));
 
-//passport middleware
-passport.serializeUser(function(user, done) {
-  done(null, user.id);
-});
+//session
+app.use(
+  session({
+    name: "sid",
+    secret: "zPLaW.....e",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 60 * 24 * 60 * 60 * 1000
+    }
+  })
+);
 
-passport.deserializeUser(function(id, done) {
-  User.findById(id, function(err, user) {
-    console.log(user);
-    done(err, user._id);
-  });
-});
-app.use(session({ secret: "cats" }));
+//passport middleware
 app.use(passport.initialize());
-app.use(passport.session());
 
 //passport config
 require("./config/passport")(passport);
+
+//bodyparser middleware
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(cors());
 
 app.use("/api/users", users);
 app.use("/api/fb", fb);

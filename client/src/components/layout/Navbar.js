@@ -27,8 +27,11 @@ class Navbar extends Component {
     });
     this.props.logoutfb();
   };
-
+  handleFrameTasks = event => {
+    console.log(event, "handleFrameTasks");
+  };
   componentDidMount() {
+    window.addEventListener("message", this.handleFrameTasks.bind(this));
     loadFbLoginApi();
   }
 
@@ -63,25 +66,41 @@ class Navbar extends Component {
     localStorage.removeItem("auth");
     this.props.logout();
   };
-  instaLogin = () => {
-    fetch(`http://localhost:3001/api/twitter/request-token`)
-      // .then(res =>
-      //   res.json().then(data => {
-      //     console.log(data);
-      //     window.location = data;
-      //   })
-      // );
-      .then(res =>
+  win = {};
+  instaLogin = async () => {
+    await fetch(`http://localhost:3001/api/twitter/request-token`, {
+      credentials: "same-origin"
+    })
+      .then(res => {
         res.json().then(url => {
-          window.open(
+          console.log(url);
+          this.win = window.open(
             url.url,
             "_blank",
             "toolbar=yes,scrollbars=yes,resizable=yes,left=500,width=400,height=400"
           );
-        })
-      );
+        });
+      })
+      .catch(err => console.log(err));
+    setTimeout(
+      () =>
+        fetch("http://localhost:3001/api/twitter/credentials", {
+          credentials: "same-origin"
+        }).then(res => {
+          res.json().then(data => {
+            let auth = localStorage.getItem("auth");
+            auth = JSON.parse(auth);
+            auth.twitter = data;
+            localStorage.setItem("auth", JSON.stringify(auth));
+            console.log(data);
+            this.handleFrameTasks.bind(this);
+          });
+        }),
+      5000
+    );
   };
   render() {
+    this.win.closed = "";
     const modalDialog = {
       height: "30vh",
       margin: "0px auto",

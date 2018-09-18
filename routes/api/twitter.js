@@ -2,6 +2,16 @@ const express = require("express");
 const router = express.Router();
 const Twitter = require("node-twitter-api");
 const config = require("../../config/keys");
+// var session = require("express-session");
+// var cookieParser = require("cookie-parser");
+// router.use(cookieParser());
+// router.use(
+//   session({
+//     secret: "2C44-4D44-WppQ38S",
+//     resave: false,
+//     saveUninitialized: true
+//   })
+// );
 var _requestSecret;
 var twitter = new Twitter({
   consumerKey: config.twitterConsumerkey,
@@ -22,8 +32,7 @@ router.get("/request-token", (req, res) => {
     if (err) res.status(500).send(err);
     else {
       _requestSecret = requestSecret;
-
-      res.json({
+      res.send({
         url:
           "https://api.twitter.com/oauth/authenticate?oauth_token=" +
           requestToken
@@ -35,35 +44,43 @@ router.get("/request-token", (req, res) => {
 //@route GET api/twitter/access-token
 //@desc callback
 //@access Public
-router.get("/access-token", function(req, res) {
+
+router.get("/access-token", (req, res) => {
   var requestToken = req.query.oauth_token,
     verifier = req.query.oauth_verifier;
 
-  twitter.getAccessToken(requestToken, _requestSecret, verifier, function(
-    err,
-    accessToken,
-    accessSecret
-  ) {
-    if (err) res.status(500).send(err);
-    else {
-      req.query.accessToken = accessToken;
-      req.query.accessSecret = accessSecret;
-      res.send("<script>window.close()</script>");
+  twitter.getAccessToken(
+    requestToken,
+    _requestSecret,
+    verifier,
+    (err, accessToken, accessSecret) => {
+      if (err) res.status(500).send(err);
+      else {
+        req.session.twitterAccessToken = accessToken;
+        req.session.twitterAccessSecret = accessSecret;
+        res.send(`<html>
+                    <body>
+                      <script>
+                          var data = "test";
+                          Window.opener.postMessage(data, 'http://localhost:3001');
+                          window.close();
+
+                      </script>
+                    </body>
+                  </html>`);
+        console.log(req.session.id, req.session.twitterAccessToken);
+        // res.status(200).send(req.session);
+      }
     }
-  });
+  );
 });
 
 //@route GET api/twitter/credentials
 //@desc get access token and secret
 //@access Public
 router.get("/credentials", (req, res) => {
-  if (req.query.accessSecret && req.query.accessToken) {
-    res.json(req.query);
-  } else {
-    res.json({
-      success: false
-    });
-  }
+  console.log(req.session.id, req.session.twitterAccessToken);
+  res.send(req.session);
 });
 
 module.exports = router;
