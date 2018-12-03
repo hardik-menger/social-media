@@ -5,6 +5,8 @@ import "../common/datepicker.css";
 import { withRouter, Link } from "react-router-dom";
 import Dropzone from "react-dropzone";
 import request from "superagent";
+import axios from "axios";
+
 const CLOUDINARY_UPLOAD_PRESET = "cnt10dyt";
 const CLOUDINARY_UPLOAD_URL =
   "https://api.cloudinary.com/v1_1/dnffetztd/upload";
@@ -16,7 +18,8 @@ class PostForm extends Component {
       promptMedia: false,
       checked: false,
       date: "",
-      uploadedFileCloudinaryUrl: null
+      uploadedFileCloudinaryUrl: null,
+      selectedFile: null
     };
     this.onSubmit = this.onSubmit.bind(this);
   }
@@ -24,9 +27,9 @@ class PostForm extends Component {
     this.setState({
       uploadedFile: files[0]
     });
-
     this.handleImageUpload(files[0]);
   }
+  //cloudinary upload and store url in state
   handleImageUpload(file) {
     let upload = request
       .post(CLOUDINARY_UPLOAD_URL)
@@ -45,16 +48,17 @@ class PostForm extends Component {
       }
     });
   }
-
+  //schedule post controller
   handleChange = () => {
-    console.log(this.state.checked);
     this.setState({
       checked: !this.state.checked
     });
   };
+  //date for submission of post converted to valid fprmat
   onCheck = date => {
     this.setState({ date: new Date(date._d).getTime() / 1000 });
   };
+  //form submission facebook cases
   onSubmit = e => {
     e.preventDefault();
     let unpublishedPages = [];
@@ -67,6 +71,9 @@ class PostForm extends Component {
     let i = 0;
     if (length === 0) {
       this.props.history.push("/pages");
+    }
+    if (this.state.twitterImageUpload) {
+      this.onSubmitTwitter();
     }
     if (!this.state.checked && this.state.image === null) {
       i = 0;
@@ -95,7 +102,6 @@ class PostForm extends Component {
                     );
                   }
 
-             
                   document.getElementsByClassName("fade")[0].style.opacity =
                     "1";
                 }
@@ -121,7 +127,11 @@ class PostForm extends Component {
                 if (!response || response.error) {
                   alertmessg = response.error.message;
                   unpublishedPages.push(post.global_brand_page_name);
-                  alert(`${alertmessg} Error occured while posting to ${post.global_brand_page_name}`);
+                  alert(
+                    `${alertmessg} Error occured while posting to ${
+                      post.global_brand_page_name
+                    }`
+                  );
                 } else {
                   i++;
                   publishedPages.push(post.global_brand_page_name);
@@ -162,7 +172,11 @@ class PostForm extends Component {
                     if (!res || res.error) {
                       alertmessg = res.error.message;
                       unpublishedPages.push(post.global_brand_page_name);
-                      alert(`${alertmessg} Error occured while posting to ${post.global_brand_page_name}`);
+                      alert(
+                        `${alertmessg} Error occured while posting to ${
+                          post.global_brand_page_name
+                        }`
+                      );
                     } else {
                       i++;
                       publishedPages.push(post.global_brand_page_name);
@@ -172,9 +186,8 @@ class PostForm extends Component {
                         );
                       }
 
-                 
                       document.getElementsByClassName("fade")[0].style.opacity =
-                      "1";
+                        "1";
                     }
                   }
                 );
@@ -199,7 +212,11 @@ class PostForm extends Component {
                   response => {
                     if (!response || response.error) {
                       alertmessg = response.error.message;
-                      alert(`${alertmessg} Error occured while posting to ${post.global_brand_page_name}`);
+                      alert(
+                        `${alertmessg} Error occured while posting to ${
+                          post.global_brand_page_name
+                        }`
+                      );
                     } else {
                       i++;
                       publishedPages.push(post.global_brand_page_name);
@@ -210,9 +227,9 @@ class PostForm extends Component {
                       }
 
                       if (index === length - 1)
-                
-                      document.getElementsByClassName("fade")[0].style.opacity =
-                        "1";
+                        document.getElementsByClassName(
+                          "fade"
+                        )[0].style.opacity = "1";
                     }
                   }
                 );
@@ -223,11 +240,48 @@ class PostForm extends Component {
       }
     }
   };
-
+  //simple status upload for twitter
+  onSubmitTwitter = () => {
+    const auth = JSON.parse(localStorage.getItem("auth"));
+    const accessSecret = auth.twitter.accessSecret;
+    const accessToken = auth.twitter.accessToken;
+    const status = this.state.post;
+    axios
+      .post("/api/twitter/status", { accessSecret, accessToken, status })
+      .then(res => {
+        console.log(res.data);
+      })
+      .catch(err => {
+        console.log(err.data);
+      });
+  };
   onPostChange = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
-
+  onChange(e) {
+    this.setState({ [e.target.name]: e.target.value });
+  }
+  //store uploaded media in state
+  fileChangedHandler = event => {
+    this.setState({ selectedFile: event.target.files[0] });
+  };
+  //send media to server
+  uploadHandler = () => {
+    let formData = new FormData();
+    const auth = JSON.parse(localStorage.getItem("auth"));
+    const accessSecret = auth.twitter.accessSecret;
+    const accessToken = auth.twitter.accessToken;
+    formData.append("image-file", this.state.selectedFile);
+    // formData.append("accessSecret", auth.twitter.accessSecret);
+    // formData.append("accessToken", auth.twitter.accessToken);
+    let Data = JSON.stringify({ accessSecret, accessToken });
+    formData.append("data", Data);
+    axios.post("/api/twitter/file-upload", formData, {
+      onUploadProgress: progressEvent => {
+        console.log(progressEvent.loaded / progressEvent.total);
+      }
+    });
+  };
   render() {
     const dateinput = this.state.checked ? (
       <div
@@ -291,6 +345,27 @@ class PostForm extends Component {
             Go back
           </button>
         </Link>
+        <label htmlFor="file">
+          <i
+            className="fas fa-paperclip mt-3 ml-4"
+            style={{
+              fontSize: "27px",
+              color: this.state.image === null ? "darkgray" : "darkseagreen"
+            }}
+          />
+          <input
+            style={{ display: "none" }}
+            ref="file"
+            type="file"
+            name="image-file"
+            className="upload-file"
+            accept="image/*"
+            id="file"
+            onChange={this.fileChangedHandler}
+            encType="multipart/form-data"
+          />
+        </label>
+        <button onClick={this.uploadHandler}>Upload!</button>
         <form onSubmit={this.onSubmit}>
           <div className="input-group">
             <div className="input-group-prepend">
@@ -332,6 +407,13 @@ class PostForm extends Component {
               />
             </div>{" "}
             <div>
+              <button
+                type="button"
+                className="btn btn-outline-secondary mr-3"
+                onClick={this.onSubmitTwitter}
+              >
+                Twitter
+              </button>
               <button
                 type="button"
                 className="btn btn-outline-secondary mr-3"

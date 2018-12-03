@@ -11,6 +11,7 @@ class Navbar extends Component {
     if (localStorage.getItem("auth")) {
       props.loginuser(JSON.parse(localStorage.getItem("auth")));
     }
+    this.state = { auth: {} };
   }
   fbLogoutUser = () => {
     window.FB.getLoginStatus(function(response) {
@@ -27,14 +28,21 @@ class Navbar extends Component {
     });
     this.props.logoutfb();
   };
-  handleFrameTasks = event => {
-    console.log(event, "handleFrameTasks");
-  };
   componentDidMount() {
-    window.addEventListener("message", this.handleFrameTasks.bind(this));
+    window.addEventListener("message", this.handleFrameTasks);
     loadFbLoginApi();
   }
-
+  componentWillUnmount() {
+    window.removeEventListener("message", this.handleFrameTasks);
+  }
+  handleFrameTasks = e => {
+    if (e.origin === "http://localhost:3001") {
+      let auth = JSON.parse(localStorage.getItem("auth"));
+      auth.twitter = { ...e.data };
+      localStorage.setItem("auth", JSON.stringify(auth));
+      this.setState({ auth });
+    }
+  };
   checkLoginState() {
     window.FB.getLoginStatus(
       function(response) {
@@ -67,13 +75,10 @@ class Navbar extends Component {
     this.props.logout();
   };
   win = {};
-  instaLogin = async () => {
-    await fetch(`http://localhost:3001/api/twitter/request-token`, {
-      credentials: "same-origin"
-    })
+  twitterLogin = () => {
+    fetch(`http://localhost:3001/api/twitter/request-token`)
       .then(res => {
         res.json().then(url => {
-          console.log(url);
           this.win = window.open(
             url.url,
             "_blank",
@@ -82,25 +87,14 @@ class Navbar extends Component {
         });
       })
       .catch(err => console.log(err));
-    setTimeout(
-      () =>
-        fetch("http://localhost:3001/api/twitter/credentials", {
-          credentials: "same-origin"
-        }).then(res => {
-          res.json().then(data => {
-            let auth = localStorage.getItem("auth");
-            auth = JSON.parse(auth);
-            auth.twitter = data;
-            localStorage.setItem("auth", JSON.stringify(auth));
-            console.log(data);
-            this.handleFrameTasks.bind(this);
-          });
-        }),
-      5000
-    );
+  };
+  twitterLogout = () => {
+    let auth = JSON.parse(localStorage.getItem("auth"));
+    delete auth.twitter;
+    localStorage.setItem("auth", JSON.stringify(auth));
+    this.setState({ auth });
   };
   render() {
-    this.win.closed = "";
     const modalDialog = {
       height: "30vh",
       margin: "0px auto",
@@ -251,14 +245,23 @@ class Navbar extends Component {
                       </button>
                     )}
                     <button className="btn btn-block btn-social btn-instagram">
-                      <i className="fab fa-instagram" /> Sign in with Instagram
+                      <i className="fab fa-instagram" /> Log in with Instagram
                     </button>
-                    <button
-                      className="btn btn-block btn-social btn-twitter"
-                      onClick={this.instaLogin}
-                    >
-                      <i className="fab fa-twitter" /> Sign in with Twitter
-                    </button>
+                    {typeof this.state.auth.twitter === "undefined" ? (
+                      <button
+                        className="btn btn-block btn-social btn-twitter"
+                        onClick={this.twitterLogin}
+                      >
+                        <i className="fab fa-twitter" /> Log in with Twitter
+                      </button>
+                    ) : (
+                      <button
+                        className="btn btn-block btn-social btn-twitter"
+                        onClick={this.twitterLogout}
+                      >
+                        <i className="fab fa-twitter" /> Logout from Twitter
+                      </button>
+                    )}
                   </div>
                   <div className="modal-footer">
                     <button

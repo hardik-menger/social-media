@@ -1,16 +1,15 @@
 const express = require("express");
-var cors = require("cors");
-const path = require("path");
-const bodyParser = require("body-parser");
-var app = express();
-const mongoose = require("mongoose");
-const passport = require("passport");
-var session = require("express-session");
-//routes
-const users = require("./routes/api/users");
-const fb = require("./routes/api/fb");
-const instagram = require("./routes/api/instagram");
-const twitter = require("./routes/api/twitter");
+(cors = require("cors")),
+  (path = require("path")),
+  (bodyParser = require("body-parser")),
+  (app = express()),
+  (mongoose = require("mongoose")),
+  (passport = require("passport")),
+  //routes
+  (users = require("./routes/api/users")),
+  (fb = require("./routes/api/fb")),
+  (instagram = require("./routes/api/instagram")),
+  (twitter = require("./routes/api/twitter"));
 
 //mongodb
 const db = require("./config/keys").mongoURI;
@@ -20,19 +19,6 @@ mongoose
   .connect(db)
   .then(() => console.log("connected  to database"))
   .catch(err => console.log("err occured in connecting " + err));
-
-//session
-app.use(
-  session({
-    name: "sid",
-    secret: "zPLaW.....e",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      maxAge: 60 * 24 * 60 * 60 * 1000
-    }
-  })
-);
 
 //passport middleware
 app.use(passport.initialize());

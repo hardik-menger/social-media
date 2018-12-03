@@ -89,8 +89,7 @@ export const logout = () => {
 export const logoutfb = () => dispatch => {
   let auth = JSON.parse(localStorage.auth);
   auth.isAuthenticated = false;
-  delete auth.authResponse;
-  delete auth.status;
+  delete auth.user;
   localStorage.setItem("auth", JSON.stringify(auth));
   return dispatch(setCurrentUser({}));
 };
