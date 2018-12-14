@@ -3,7 +3,8 @@ const router = express.Router();
 const Twitter = require("node-twitter-api");
 const config = require("../../config/keys");
 var multer = require("multer");
-const fs = require("fs");
+var User = require("../../models/User");
+var TwitterAccount = require("../../models/TwitterAccounts");
 var _requestSecret;
 // Set The Storage Engine
 const storage = multer.diskStorage({
@@ -82,20 +83,38 @@ router.get("/access-token", (req, res) => {
     (err, accessToken, accessSecret) => {
       if (err) res.status(500).send(err);
       else {
-        const credentials = {
-          accessToken,
-          accessSecret
-        };
-        res.send(`<html>
-                    <body>
-                      <script>
-                            window.opener.postMessage(${JSON.stringify(
-                              credentials
-                            )}, '*');
-                            window.close();
-                       </script>
-                    </body>
-                  </html>`);
+        let userData = {};
+        twitter.verifyCredentials(accessToken, accessSecret, function(
+          err,
+          user
+        ) {
+          if (err) {
+            console.log("Verification in get info error");
+            res.status(500).send(err);
+          } else {
+            userData = user;
+            let credentials = {
+              accessToken,
+              accessSecret,
+              followers_count: userData.followers_count,
+              friends_count: userData.friends_count,
+              name: userData.name,
+              screen_name: userData.screen_name,
+              profile_image_url: userData.profile_image_url,
+              id: userData.id
+            };
+            res.send(`<html>
+            <body>
+              <script>
+                    window.opener.postMessage(${JSON.stringify(
+                      credentials
+                    )}, '*');
+                    window.close();
+               </script>
+            </body>
+          </html>`);
+          }
+        });
       }
     }
   );
@@ -105,13 +124,11 @@ router.get("/access-token", (req, res) => {
 //@desc get access token and secret
 //@access Public
 router.post("/status", (req, res) => {
-  // var b64content = fs.readFileSync("/path/to/img", { encoding: "base64" });
   const { status, accessToken, accessSecret } = req.body;
   twitter.statuses(
     "update",
     {
-      status: status,
-      media_ids: "1069680854794784769"
+      status: status
     },
     accessToken,
     accessSecret,
@@ -131,15 +148,11 @@ router.post("/status", (req, res) => {
 router.post("/file-upload", (req, res) => {
   upload(req, res, err => {
     if (err) {
-      console.log(err);
+      res.json({ err });
     } else {
       if (req.file == undefined) {
-        console.log("file not found error");
+        res.json({ err: "file not found error" });
       } else {
-        var b64content = fs.readFileSync(
-          `C:/hardik/social-media/uploads/${req.file.filename}`,
-          { encoding: "base64" }
-        );
         let { accessSecret, accessToken } = JSON.parse(req.body.data);
         twitter.uploadMedia(
           {
@@ -152,7 +165,6 @@ router.post("/file-upload", (req, res) => {
             if (error) {
               res.json(error.data);
             } else {
-              console.log(data);
               twitter.statuses(
                 "update",
                 {
@@ -175,5 +187,37 @@ router.post("/file-upload", (req, res) => {
       }
     }
   });
+});
+
+//@route POST api/twitter/save-token
+//@desc save token in twitteraccountcollection in db
+//@access Public
+router.post("/save-token", (request, response) => {
+  TwitterAccount.updateOne(
+    { username: request.body.twitterauth.username },
+    { ...request.body.twitterauth },
+    {
+      upsert: true,
+      new: true
+    }
+  )
+    .then(res => {
+      User.updateOne(
+        { email: request.body.useremail },
+        { twitteraccount: mongoose.Types.ObjectId(request.body.twitterid) },
+        {
+          upsert: true,
+          new: true
+        },
+        (err, res) => {
+          !err
+            ? response.json({ success: true })
+            : response.json({ err: "invalid credentials" });
+        }
+      );
+    })
+    .catch(e => {
+      response.json({ error: e });
+    });
 });
 module.exports = router;

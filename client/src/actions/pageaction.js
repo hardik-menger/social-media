@@ -2,6 +2,7 @@ import {
   PAGES_LOADING,
   GET_PAGES,
   ADD_TO_POSTARRAY,
+  ADD_TO_TWITTER,
   ADD_ALL_TO_POSTARRAY
 } from "./types";
 
@@ -17,6 +18,14 @@ export const groupPost = set => {
     payload: set
   };
 };
+
+export const Addtwitter = set => {
+  return {
+    type: ADD_TO_TWITTER,
+    payload: set
+  };
+};
+
 export const groupPostToAll = pages => {
   return {
     type: ADD_ALL_TO_POSTARRAY,

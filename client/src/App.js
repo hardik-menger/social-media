@@ -13,7 +13,12 @@ import jwt_decode from "jwt-decode";
 import setAuthtoken from "./utils/setauthtoken";
 import Login from "./components/auth/login";
 import Register from "./components/auth/register";
-import { logout, setCurrentUser } from "./actions/authaction";
+import {
+  logout,
+  setCurrentUser,
+  logintwitter,
+  logouttwitter
+} from "./actions/authaction";
 import Profiles from "./components/Profiles/profiles";
 if (localStorage.jwttoken) {
   setAuthtoken(localStorage.jwttoken);
@@ -27,6 +32,7 @@ if (localStorage.jwttoken) {
     window.location.href = "/login";
   }
 }
+
 class App extends Component {
   render() {
     return (

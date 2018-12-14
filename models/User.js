@@ -14,11 +14,11 @@ const UserSchema = new Schema({
     required: true
   },
   facebookprofiles: [],
-  instagramprofiles: [],
-  twitterprofiles: [],
   date: {
     type: Date,
     default: Date.now
-  }
+  },
+  twitteraccount: { type: Schema.ObjectId, ref: "TwitterAccount" },
+  updatedAt: { type: Date, default: Date.now }
 });
 module.exports = User = mongoose.model("users", UserSchema);

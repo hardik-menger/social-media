@@ -16,12 +16,12 @@ class Login extends Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
   componentDidMount() {
-    if (this.props.auth.appAuth) {
+    if (this.props.auth.isAuthenticated) {
       this.props.history.push("/");
     }
   }
   componentWillReceiveProps(nextProps) {
-    if (nextProps.auth.appAuth) {
+    if (nextProps.auth.isAuthenticated) {
       this.props.history.push("/");
     }
     if (nextProps.errors) {

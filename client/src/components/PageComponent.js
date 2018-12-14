@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { getpages, setpageloading } from "../actions/pageaction";
-import { loginuser } from "../actions/authaction";
+import { getpages } from "../actions/pageaction";
+import { loginuser, addTwitterToArray } from "../actions/authaction";
 import SinglePage from "./SinglePage";
 import Spinner from "./common/spinner";
 import loadFbLoginApi from "../FB/loadsdk";
@@ -9,11 +9,12 @@ import PostConfirmation from "./PostConfirmation/PostConfirmation";
 import { groupPostToAll } from "../actions/pageaction";
 import "./materialInput.css";
 import axios from "axios";
+import "../utils/checkbox.css";
 class PageComponent extends Component {
   constructor() {
     super();
     this.addedAll = false;
-    this.state = { sortby: "1", search: "" };
+    this.state = { sortby: "1", search: "", twitterPublish: false };
   }
   addedAll;
   componentDidMount() {
@@ -49,32 +50,37 @@ class PageComponent extends Component {
       .catch(err => console.log(err));
   }
   async statusChangeCallback() {
-    const auth = JSON.parse(localStorage.getItem("auth"));
-    const { accessToken } = auth.user.authResponse;
-    const { status } = auth.user;
-    if (status === "connected") {
-      await fetch(
-        `https://graph.facebook.com/v3.0/me/accounts?access_token=${accessToken}&debug=all&fields=id%2C%20global_brand_page_name%2C%20about%2C%20category%2C%20category_list%2C%20description%2C%20username%2C%20access_token&format=json&method=get&pretty=0&suppress_http_code=1`
-      )
-        .then(resp => resp.json()) // Transform the data into json
-        .then(data => {
-          if (data.error === undefined) {
-            this.setState({ all: data.data });
-            this.makeSection(data.data);
-          } else {
-            window.FB.login(response => {
-              if (response.authResponse) {
-                this.props.loginuser(response);
-                this.statusChangeCallback();
-              }
-            });
-            this.setState({ all: data.data });
-          }
-        });
-    } else if (status === "not_authorized") {
-      alert("Please log into this app.");
-    } else {
-      alert("Please log into this facebook.");
+    const auth = !!JSON.parse(localStorage.getItem("auth"))
+      ? JSON.parse(localStorage.getItem("auth"))
+      : {};
+    if (this.props.auth.appAuth) {
+      const { accessToken } = auth.appData.authResponse;
+      const { status } = auth.appData;
+
+      if (status === "connected") {
+        await fetch(
+          `https://graph.facebook.com/v3.0/me/accounts?access_token=${accessToken}&debug=all&fields=id%2C%20global_brand_page_name%2C%20about%2C%20category%2C%20category_list%2C%20description%2C%20username%2C%20access_token&format=json&method=get&pretty=0&suppress_http_code=1`
+        )
+          .then(resp => resp.json()) // Transform the data into json
+          .then(data => {
+            if (data.error === undefined) {
+              this.setState({ all: data.data });
+              this.makeSection(data.data);
+            } else {
+              window.FB.login(response => {
+                if (response.authResponse) {
+                  this.props.loginuser(response);
+                  this.statusChangeCallback();
+                }
+              });
+              this.setState({ all: data.data });
+            }
+          });
+      } else if (status === "not_authorized") {
+        alert("Please log into this app.");
+      } else {
+        alert("Please log into this facebook.");
+      }
     }
   }
   onChange = e => {
@@ -117,6 +123,9 @@ class PageComponent extends Component {
         return this.props.pages.pages;
     }
   };
+  addTwitter = e => {
+    this.props.addTwitterToArray(e.target.checked);
+  };
   render() {
     const modalDialog = {
       width: "100%",
@@ -139,10 +148,15 @@ class PageComponent extends Component {
       pages = fetchedPages.map((page, index) => {
         return <SinglePage page={page} key={index} />;
       });
+    } else if (!this.props.auth.appAuth) {
+      pages = (
+        <p className="lead m-4">
+          No facebook pages to show please sign in with facebook
+        </p>
+      );
     } else {
       pages = <Spinner />;
     }
-
     return (
       <div>
         <div className="d-flex justify-content-between">
@@ -174,7 +188,6 @@ class PageComponent extends Component {
               </li>
             </div>
           </div>
-
           <div className="group">
             <input
               type="search"
@@ -186,8 +199,28 @@ class PageComponent extends Component {
             <span className="highlight" />
             <span className="bar" />
             <label className="materiallabel">Search</label>
-          </div>
+          </div>{" "}
         </div>
+        {this.props.auth.twitterAuth ? (
+          <div className="card ml-2 mr-2">
+            <div className="card-body d-flex justify-content-between">
+              <img
+                src={this.props.auth.twitter.profile_image_url}
+                style={{ borderRadius: "50%" }}
+              />
+              <p className="lead m-0" style={{ lineHeight: "30px" }}>
+                Post to twitter handle {this.props.auth.twitter.screen_name}?
+              </p>
+              <div className="switch_box box_1">
+                <input
+                  type="checkbox"
+                  className="switch_1"
+                  onChange={this.addTwitter}
+                />
+              </div>
+            </div>
+          </div>
+        ) : null}{" "}
         <div style={{ display: "flex", flexWrap: "wrap" }}> {pages}</div>
         <div className="d-flex justify-content-end">
           <button
@@ -197,6 +230,10 @@ class PageComponent extends Component {
             data-target="#myModal"
             style={{ marginRight: "10px" }}
             onClick={this.addAll}
+            disabled={
+              !this.props.auth.twitter.add &&
+              this.props.pages.pageArray.length === 0
+            }
           >
             Select All
           </button>
@@ -205,9 +242,12 @@ class PageComponent extends Component {
             className="btn btn-info btn-md "
             data-toggle="modal"
             data-target="#myModal"
-            disabled={this.props.pages.pageArray.length === 0}
+            disabled={
+              !this.props.auth.twitter.add &&
+              this.props.pages.pageArray.length === 0
+            }
           >
-            Confirm Pages
+            Confirm Inputs
           </button>
         </div>
         <div
@@ -261,5 +301,5 @@ const mapStateToProps = state => {
 };
 export default connect(
   mapStateToProps,
-  { getpages, setpageloading, loginuser, groupPostToAll }
+  { getpages, loginuser, addTwitterToArray, groupPostToAll }
 )(PageComponent);

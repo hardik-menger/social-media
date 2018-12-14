@@ -71,8 +71,8 @@ class Profiles extends Component {
   }
   async statusChangeCallback() {
     const auth = JSON.parse(localStorage.getItem("auth"));
-    const { accessToken } = auth.user.authResponse;
-    const { status } = auth.user;
+    const { accessToken } = auth.appData.authResponse;
+    const { status } = auth.appData;
     if (status === "connected") {
       await fetch(
         `https://graph.facebook.com/v3.0/me/accounts?access_token=${accessToken}&debug=all&fields=id%2C%20global_brand_page_name%2C%20about%2C%20category%2C%20category_list%2C%20description%2C%20username%2C%20access_token&format=json&method=get&pretty=0&suppress_http_code=1`
@@ -242,7 +242,11 @@ class Profiles extends Component {
           <Spinner style={{ padding: "20%" }} style={{ height: "60vh" }} />
         ) : (
           <div className="d-flex flex-wrap flex-column">
-            {[...NotAddedPages, AddedPages]}{" "}
+            {this.state.all.length === 0 ? (
+              <Spinner />
+            ) : (
+              [...NotAddedPages, AddedPages]
+            )}{" "}
           </div>
         )}
       </div>

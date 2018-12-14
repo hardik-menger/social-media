@@ -72,7 +72,8 @@ router.post("/login", (req, res) => {
           if (isMatch) {
             const payload = {
               id: user.id,
-              name: user.name
+              name: user.name,
+              email: user.email
             };
 
             jwt.sign(
@@ -119,7 +120,15 @@ router.get(
   (req, res) => {
     User.findById(req.user.id)
       .then(user => {
-        res.json(user);
+        const userProfiles = {
+          facebookprofiles: user.facebookprofiles,
+          instagramprofiles: user.instagramprofiles,
+          twitterprofiles: user.twitterprofiles,
+          _id: user._id,
+          name: user.name,
+          email: user.email
+        };
+        res.json(userProfiles);
       })
       .catch(err => res.json({ err }));
   }

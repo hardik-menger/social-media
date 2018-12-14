@@ -19,7 +19,7 @@ class PostComponent extends Component {
   }
   async statusChangeCallback() {
     const auth = JSON.parse(localStorage.getItem("auth"));
-    const { status } = auth.user;
+    const { status } = auth.appData;
     if (status === "connected") {
       await fetch(
         `https://graph.facebook.com/v3.0/${

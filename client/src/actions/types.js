@@ -1,14 +1,14 @@
 export const GET_ERRORS = "GET_ERRORS";
 export const REGISTER_USER = "REGISTER_USER";
 export const SET_CURRENT_USER = "SET_CURRENT_USER";
-
+export const REMOVE_TWITTER_AUTH = "REMOVE_TWITTER_AUTH";
 export const CLEAR_CURRENT_PROFILE = "CLEAR_CURRENT_PROFILE";
 export const GET_PROFILES = "GET_PROFILES";
 export const SET_PROFILE = "SET_PROFILE";
 export const POST_LOADING = "POST_LOADING";
-
+export const ADD_TO_TWITTER = "ADD_TO_TWITTER";
 export const CLEAR_ERRORS = "CLEAR_ERRORS";
-
+export const ADD_TWITTER_AUTH = "ADD_TWITTER_AUTH";
 export const ADD_PAGE = "ADD_PAGE";
 export const PAGE_LOADING = "PAGE_LOADING";
 export const PAGES_LOADING = "PAGES_LOADING";
@@ -21,3 +21,5 @@ export const ADD_ALL_TO_POSTARRAY = "ADD_ALL_TO_POSTARRAY";
 export const SET_APP_AUTH = "SET_APP_AUTH";
 export const REMOVE_USER = "REMOVE_USER";
 export const FACEBOOK_LOGOUT = "FACEBOOK_LOGOUT";
+export const FACEBOOK_LOGIN = "FACEBOOK_LOGIN";
+export const TWITTER_ADD = "TWITTER_ADD";

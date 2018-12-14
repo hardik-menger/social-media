@@ -5,6 +5,7 @@ import {
   GET_PAGES,
   DELETE_PAGE,
   ADD_TO_POSTARRAY,
+  ADD_TO_TWITTER,
   ADD_ALL_TO_POSTARRAY
 } from "../actions/types";
 const initialState = {
