@@ -195,7 +195,7 @@ router.post("/file-upload", (req, res) => {
 router.post("/save-token", (request, response) => {
   TwitterAccount.updateOne(
     { username: request.body.twitterauth.username },
-    { ...request.body.twitterauth },
+    { ...request.body.twitterauth, date },
     {
       upsert: true,
       new: true

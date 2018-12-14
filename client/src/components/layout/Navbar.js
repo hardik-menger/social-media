@@ -20,33 +20,16 @@ class Navbar extends Component {
       localStorage.getItem("auth") === null
         ? {}
         : JSON.parse(localStorage.getItem("auth"));
-    if (Object.keys(auth).length === 0) {
-      //  props.logintwitter({});
-      //   props.loginfb({});
-    } else {
-      // console.log("twiiter state", auth.twitter);
+    if (!Object.keys(auth).length === 0) {
       props.logintwitter(auth.twitter);
       props.loginfb(!!!auth.appData ? {} : auth.appData);
     }
-
-    // props.logintwitter(auth.appData.twitter);
-    // props.loginuser(auth.user);
     if (localStorage.getItem("auth")) {
       props.loginuser(JSON.parse(localStorage.getItem("auth")));
     }
     this.state = { auth: {} };
   }
-  fbLogoutUser = () => {
-    window.FB.getLoginStatus(function(response) {
-      if (response && response.status === "connected") {
-        window.FB.logout(function(response) {
-          console.log(response, "on logout");
-        });
-      }
-    });
-  };
   onfblogout = () => {
-    console.log("called?");
     window.FB.logout(response => {
       console.log(response);
     });
@@ -83,7 +66,6 @@ class Navbar extends Component {
     window.FB.login(
       response => {
         if (response.authResponse) {
-          console.log(response);
           this.props.loginfb(response);
         }
       },
@@ -165,7 +147,6 @@ class Navbar extends Component {
       JSON.parse(localStorage.getItem("auth")).isAuthenticated
         ? (socialAuth = true)
         : (socialAuth = false);
-      // console.log(this.props.auth.twitterAuth);
       this.props.auth.twitterAuth
         ? (twitterAuth = true)
         : (twitterAuth = false);
@@ -198,7 +179,6 @@ class Navbar extends Component {
             Add Profiles
           </Link>
         </li>
-        {console.log(appAuth || this.props.auth.twitterAuth)}
         <li
           className="nav-item"
           style={{

@@ -60,7 +60,6 @@ class Profiles extends Component {
           //   type: "twitter"
           // });
           if (index === array.length - 1) {
-            //   console.log(facebookprofiles, instagramprofiles, twitterprofiles);
             this.setState({ added, notadded });
             this.props.getpages(added);
             this.setState({ loading: false });

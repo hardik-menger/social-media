@@ -51,7 +51,6 @@ class PostComponent extends Component {
         }&fields=picture,id,created_time,story,message&debug=all&format=json&is_published=true&method=get&pretty=0&suppress_http_code=1`
       ).then(data =>
         data.json().then(d => {
-          console.log(d.data);
           this.setState({ published: d.data });
         })
       );

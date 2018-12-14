@@ -95,7 +95,6 @@ class PostForm extends Component {
                   i++;
                   publishedPages.push(post.global_brand_page_name);
 
-                  console.log(index, length);
                   if (i === length) {
                     alert(
                       `Posted successfully on ${publishedPages.join(", ")}`

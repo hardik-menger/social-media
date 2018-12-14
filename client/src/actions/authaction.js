@@ -38,7 +38,6 @@ export const loginuser = userdata => {
         appAuth: true
       })
     );
-    console.log(localStorage.getItem("auth"));
 
     return {
       type: SET_CURRENT_USER,
@@ -96,7 +95,6 @@ export const logout = () => {
   };
 };
 export const logoutfb = () => {
-  console.log("are we here?");
   let auth = JSON.parse(localStorage.auth);
   auth.appAuth = false;
   auth.appData = {};
@@ -105,7 +103,6 @@ export const logoutfb = () => {
 };
 export const loginfb = user => {
   let auth = JSON.parse(localStorage.auth);
-  console.log(auth.appData);
   auth.appAuth = !isEmpty(user);
   auth.appData = user;
   localStorage.setItem("auth", JSON.stringify(auth));
