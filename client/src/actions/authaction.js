@@ -102,18 +102,22 @@ export const logoutfb = () => {
   return { type: FACEBOOK_LOGIN, payload: {} };
 };
 export const loginfb = user => {
-  let auth = JSON.parse(localStorage.auth);
+  let auth = JSON.parse(localStorage.getItem("auth"));
   auth.appAuth = !isEmpty(user);
   auth.appData = user;
   localStorage.setItem("auth", JSON.stringify(auth));
   return { type: FACEBOOK_LOGIN, payload: user };
 };
 export const logintwitter = twitterAuth => {
-  let auth = JSON.parse(localStorage.auth);
-  auth.twitterAuth = true;
-  auth.twitter = { ...twitterAuth };
-  localStorage.setItem("auth", JSON.stringify(auth));
-  return { type: ADD_TWITTER_AUTH, payload: twitterAuth };
+  let auth = JSON.parse(localStorage.getItem("auth"));
+  if (auth) {
+    auth.twitterAuth = true;
+    auth.twitter = { ...twitterAuth };
+    localStorage.setItem("auth", JSON.stringify(auth));
+    return { type: ADD_TWITTER_AUTH, payload: twitterAuth };
+  } else {
+    return { type: REMOVE_TWITTER_AUTH };
+  }
 };
 export const logouttwitter = () => {
   let auth = JSON.parse(localStorage.getItem("auth"));

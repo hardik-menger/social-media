@@ -20,7 +20,10 @@ class Navbar extends Component {
       localStorage.getItem("auth") === null
         ? {}
         : JSON.parse(localStorage.getItem("auth"));
-    if (!Object.keys(auth).length === 0) {
+    if (Object.keys(auth).length === 0) {
+      // props.logintwitter(auth.twitter);
+      // props.loginfb(!!!auth.appData ? {} : auth.appData);
+    } else {
       props.logintwitter(auth.twitter);
       props.loginfb(!!!auth.appData ? {} : auth.appData);
     }
@@ -112,7 +115,8 @@ class Navbar extends Component {
           type: "twitter",
           secret: this.props.auth.twitter.accessSecret,
           token: this.props.auth.twitter.accessToken,
-          profile_image_url: this.props.auth.twitter.profile_image_url
+          profile_image_url: this.props.auth.twitter.profile_image_url,
+          accountid: this.props.auth.twitter.id
         }
       })
       .then(res => {

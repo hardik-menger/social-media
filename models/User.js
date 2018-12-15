@@ -18,7 +18,7 @@ const UserSchema = new Schema({
     type: Date,
     default: Date.now
   },
-  twitteraccount: { type: Schema.ObjectId, ref: "TwitterAccount" },
+  twitteraccount: [{ type: Number, ref: "TwitterAccount" }],
   updatedAt: { type: Date, default: Date.now }
 });
 module.exports = User = mongoose.model("users", UserSchema);

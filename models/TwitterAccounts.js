@@ -6,7 +6,8 @@ var accountSchema = new mongoose.Schema({
   secret: { type: String },
   token: { type: String },
   profile_image_url: { type: String },
-  updatedAt: { type: Date, default: Date.now }
+  updatedAt: { type: Date, default: Date.now },
+  accountid: { type: Number }
 });
 
 module.exports = mongoose.model("twitteraccounts", accountSchema);

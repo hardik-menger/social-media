@@ -19,7 +19,8 @@ class PostForm extends Component {
       checked: false,
       date: "",
       uploadedFileCloudinaryUrl: null,
-      selectedFile: null
+      selectedFile: null,
+      twitterSchedule: ""
     };
     this.onSubmit = this.onSubmit.bind(this);
   }
@@ -56,7 +57,10 @@ class PostForm extends Component {
   };
   //date for submission of post converted to valid fprmat
   onCheck = date => {
-    this.setState({ date: new Date(date._d).getTime() / 1000 });
+    this.setState({
+      date: new Date(date._d).getTime() / 1000,
+      twitterSchedule: new Date(date._d)
+    });
   };
   //form submission facebook cases
   onSubmit = e => {
@@ -241,17 +245,22 @@ class PostForm extends Component {
   };
   //simple status upload for twitter
   onSubmitTwitter = () => {
-    const auth = JSON.parse(localStorage.getItem("auth"));
-    const accessSecret = auth.twitter.accessSecret;
-    const accessToken = auth.twitter.accessToken;
-    const status = this.state.post;
+    const message = this.state.post;
     axios
-      .post("/api/twitter/status", { accessSecret, accessToken, status })
+      .post("/api/twitter/post_task", {
+        message,
+        date:
+          this.state.date.length === 0
+            ? Date.now()
+            : this.state.twitterSchedule,
+        account_ids: [this.props.auth.twitter.id],
+        email: this.props.auth.user.email
+      })
       .then(res => {
-        console.log(res.data);
+        console.log(res);
       })
       .catch(err => {
-        console.log(err.data);
+        console.log(err);
       });
   };
   onPostChange = e => {
@@ -266,14 +275,18 @@ class PostForm extends Component {
   };
   //send media to server
   uploadHandler = () => {
+    const message = this.state.post;
     let formData = new FormData();
-    const auth = JSON.parse(localStorage.getItem("auth"));
-    const accessSecret = auth.twitter.accessSecret;
-    const accessToken = auth.twitter.accessToken;
+    let email = this.props.auth.user.email;
+    let account_ids = [this.props.auth.twitter.id];
     formData.append("image-file", this.state.selectedFile);
-    // formData.append("accessSecret", auth.twitter.accessSecret);
-    // formData.append("accessToken", auth.twitter.accessToken);
-    let Data = JSON.stringify({ accessSecret, accessToken });
+    let Data = JSON.stringify({
+      email,
+      account_ids,
+      message,
+      date:
+        this.state.date.length === 0 ? Date.now() : this.state.twitterSchedule
+    });
     formData.append("data", Data);
     axios.post("/api/twitter/file-upload", formData, {
       onUploadProgress: progressEvent => {
