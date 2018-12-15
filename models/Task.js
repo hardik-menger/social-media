@@ -2,6 +2,7 @@ var mongoose = require("mongoose");
 const Twitter = require("node-twitter-api");
 const config = require("../config/keys");
 const Account = require("./TwitterAccounts");
+var async = require("async");
 var Schema = mongoose.Schema;
 var twitter = new Twitter({
   consumerKey: config.twitterConsumerkey,
@@ -13,25 +14,26 @@ var taskSchema = new mongoose.Schema({
   user: { type: Schema.ObjectId, ref: "users" },
   message: { type: String },
   media_path: { type: String },
-  updatedAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: new Date() },
   date: { type: Date },
   processed: { type: Boolean }
 });
 taskSchema.methods = {
-  sendTask: () => {
+  sendTask: (accounts, message, media_path) => {
     self = this;
-    Account.find({ accountid: { $in: JSON.parse(self.accounts) } }, function(
+    Account.find({ accountid: { $in: JSON.parse(accounts) } }, function(
       err,
       accounts
     ) {
       if (err) return res.status(500).send("Cannot verify accounts.");
       async.eachSeries(accounts, function iterator(account, callback) {
-        if (self.media_path && self.media_path.length > 0) {
+        console.log("async", account.username);
+        if (media_path) {
           //media post
           twitter.uploadMedia(
             {
               isBase64: false,
-              media: self.media_path
+              media: media_path
             },
             account.token,
             account.secret,
@@ -39,19 +41,25 @@ taskSchema.methods = {
               if (error) {
                 res.json(error.data);
               } else {
+                console.log(data.media_id_string);
                 twitter.statuses(
                   "update",
                   {
-                    status: self.message,
+                    status: message,
                     media_ids: data.media_id_string
                   },
                   account.token,
                   account.secret,
                   (error, data, response) => {
                     if (error) {
-                      res.json(error.data);
+                      console.error(error.data);
                     } else {
-                      res.send({ success: true });
+                      console.log({
+                        success: true,
+                        message,
+                        time: new Date(),
+                        media_posted: media_path
+                      });
                     }
                   }
                 );
@@ -63,15 +71,15 @@ taskSchema.methods = {
           twitter.statuses(
             "update",
             {
-              status: self.message
+              status: message
             },
             account.token,
             account.secret,
             (error, data, response) => {
               if (error) {
-                res.json(error.data);
+                console.error(error.data);
               } else {
-                res.send({ success: true });
+                console.log({ success: true, message, time: new Date() });
               }
             }
           );

@@ -167,6 +167,7 @@ router.post("/file-upload", (req, res) => {
         res.json({ err: "file not found error" });
       } else {
         let { email, account_ids, message, date } = JSON.parse(req.body.data);
+        date = new Date(date);
         User.findOne({ email }, function(err, user) {
           if (!user) {
             return res.status(401).send("Cannot find user.");

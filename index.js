@@ -9,11 +9,12 @@ const express = require("express");
   (users = require("./routes/api/users")),
   (fb = require("./routes/api/fb")),
   (instagram = require("./routes/api/instagram")),
-  (twitter = require("./routes/api/twitter"));
+  (twitter = require("./routes/api/twitter")),
+  (CronJob = require("cron").CronJob);
 
 //mongodb
 const db = require("./config/keys").mongoURI;
-
+const jobController = require("./controllers/jobController");
 //connect
 mongoose
   .connect(db)
@@ -45,4 +46,15 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 const port = process.env.PORT || 3001;
+
+new CronJob(
+  "0 * * * * *",
+  function() {
+    jobController.tasks();
+  },
+  null,
+  true,
+  null
+);
+
 app.listen(port, () => console.log(`running server on  ${port}`));

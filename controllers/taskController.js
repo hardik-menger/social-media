@@ -21,11 +21,10 @@ exports.postAddTask = (req, res) => {
           user: user,
           accounts: accounts.map(obj => obj.accountid),
           message: req.body.message,
-          date: req.body.date
+          date: new Date(req.body.date)
         });
         task.save(function(err) {
           if (err) return res.send(err);
-          //   task.sendTask();
           return res.send({ response: "OK" });
         });
       }
