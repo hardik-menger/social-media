@@ -46,7 +46,13 @@ class Navbar extends Component {
     window.removeEventListener("message", this.handleFrameTasks);
   }
   handleFrameTasks = e => {
-    if (e.origin === "http://localhost:3001") {
+    console.log(e.origin);
+    if (
+      e.origin !== "https://platform.twitter.com" &&
+      e.origin !== "https://staticxx.facebook.com" &&
+      e.origin !== "https://riidlfbproject.herokuapp.com" &&
+      e.origin !== "http://localhost:3000"
+    ) {
       let auth = JSON.parse(localStorage.getItem("auth"));
       auth.twitter = { ...e.data };
       this.setState({ auth });
@@ -86,7 +92,8 @@ class Navbar extends Component {
   };
   win = {};
   twitterLogin = () => {
-    fetch(`http://localhost:3001/api/twitter/request-token`)
+    axios
+      .get(`/api/twitter/request-token`)
       .then(res => {
         res.json().then(url => {
           this.win = window.open(

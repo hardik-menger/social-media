@@ -11,6 +11,7 @@ const taskController = require("../../controllers/taskController");
 const passport = require("passport");
 const fs = require("fs");
 var _requestSecret;
+const port = process.env.PORT || 3001;
 // Set The Storage Engine
 const storage = multer.diskStorage({
   destination: "./routes/api/uploads/",
@@ -46,11 +47,10 @@ function checkFileType(file, cb) {
     cb("Error: Images Only!");
   }
 }
-
 var twitter = new Twitter({
   consumerKey: config.twitterConsumerkey,
   consumerSecret: config.twitterConsumerSecret,
-  callback: `http://localhost:${process.env.PORT}/api/twitter/access-token`
+  callback: `http://localhost:${port}/api/twitter/access-token`
 });
 
 //@route GET api/twitter/test
@@ -69,7 +69,8 @@ router.get("/request-token", (req, res) => {
       res.send({
         url:
           "https://api.twitter.com/oauth/authenticate?oauth_token=" +
-          requestToken
+          requestToken,
+        port
       });
     }
   });

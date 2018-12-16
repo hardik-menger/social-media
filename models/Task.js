@@ -4,11 +4,13 @@ const config = require("../config/keys");
 const Account = require("./TwitterAccounts");
 var async = require("async");
 var Schema = mongoose.Schema;
+const port = process.env.PORT || 3001;
 var twitter = new Twitter({
   consumerKey: config.twitterConsumerkey,
   consumerSecret: config.twitterConsumerSecret,
-  callback: "http://localhost:3001/api/twitter/access-token"
+  callback: `http://localhost:${port}/api/twitter/access-token`
 });
+
 var taskSchema = new mongoose.Schema({
   accounts: [{ type: Number }],
   user: { type: Schema.ObjectId, ref: "users" },
