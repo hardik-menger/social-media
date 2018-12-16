@@ -6,7 +6,7 @@ import { withRouter, Link } from "react-router-dom";
 import Dropzone from "react-dropzone";
 import request from "superagent";
 import axios from "axios";
-
+import Spinner from "../common/spinner";
 const CLOUDINARY_UPLOAD_PRESET = "cnt10dyt";
 const CLOUDINARY_UPLOAD_URL =
   "https://api.cloudinary.com/v1_1/dnffetztd/upload";
@@ -18,9 +18,10 @@ class PostForm extends Component {
       promptMedia: false,
       checked: false,
       date: "",
-      uploadedFileCloudinaryUrl: null,
-      selectedFile: null,
-      twitterSchedule: ""
+      uploadedFileCloudinaryUrl: "",
+      uploadedFile: { preview: "" },
+      twitterSchedule: "",
+      loading: false
     };
     this.onSubmit = this.onSubmit.bind(this);
   }
@@ -28,10 +29,16 @@ class PostForm extends Component {
     this.setState({
       uploadedFile: files[0]
     });
-    this.handleImageUpload(files[0]);
+
+    this.setState({ selectedFile: files[0] });
+    if (this.props.pages.pageArray.length !== 0)
+      this.handleImageUpload(files[0]);
+
+    this.setState({ promptMedia: false });
   }
   //cloudinary upload and store url in state
   handleImageUpload(file) {
+    this.setState({ loading: true });
     let upload = request
       .post(CLOUDINARY_UPLOAD_URL)
       .field("upload_preset", CLOUDINARY_UPLOAD_PRESET)
@@ -40,11 +47,13 @@ class PostForm extends Component {
     upload.end((err, response) => {
       if (err) {
         alert(err);
+        this.setState({ loading: false });
       }
 
       if (response.body.secure_url !== "") {
         this.setState({
-          uploadedFileCloudinaryUrl: response.body.secure_url
+          uploadedFileCloudinaryUrl: response.body.secure_url,
+          loading: false
         });
       }
     });
@@ -65,6 +74,10 @@ class PostForm extends Component {
   //form submission facebook cases
   onSubmit = e => {
     e.preventDefault();
+    //twitter uploader
+    this.props.auth.twitter.add && this.state.selectedFile
+      ? this.uploadHandler()
+      : this.onSubmitTwitter();
     let unpublishedPages = [];
     let publishedPages = [];
     let alertmessg;
@@ -269,10 +282,6 @@ class PostForm extends Component {
   onChange(e) {
     this.setState({ [e.target.name]: e.target.value });
   }
-  //store uploaded media in state
-  fileChangedHandler = event => {
-    this.setState({ selectedFile: event.target.files[0] });
-  };
   //send media to server
   uploadHandler = () => {
     const message = this.state.post;
@@ -307,8 +316,11 @@ class PostForm extends Component {
       </div>
     ) : null;
     let selectedfile;
+    if (this.state.loading) selectedfile = <Spinner />;
     selectedfile =
-      this.state.uploadedFileCloudinaryUrl !== null ? (
+      this.state.uploadedFileCloudinaryUrl !== "" ||
+      (Object.keys(this.state.uploadedFile).length > 0 &&
+        this.state.uploadedFile.preview !== "") ? (
         <div className="card mt-4">
           <div className="card-header">Selected File</div>
           <div className="card-body">
@@ -316,7 +328,11 @@ class PostForm extends Component {
               <div>
                 <img
                   className="pr-4"
-                  src={this.state.uploadedFileCloudinaryUrl}
+                  src={
+                    this.state.uploadedFileCloudinaryUrl !== ""
+                      ? this.state.uploadedFileCloudinaryUrl
+                      : this.state.uploadedFile.preview
+                  }
                   alt="Selected File"
                   height="50"
                 />
@@ -325,9 +341,10 @@ class PostForm extends Component {
                 <button
                   type="button"
                   className="btn btn-outline-secondary"
-                  onClick={() =>
-                    this.setState({ uploadedFileCloudinaryUrl: null })
-                  }
+                  onClick={() => {
+                    this.setState({ uploadedFileCloudinaryUrl: "" });
+                    this.setState({ uploadedFile: { preview: "" } });
+                  }}
                 >
                   delete
                   <i className="fas fa-times" />
@@ -357,27 +374,6 @@ class PostForm extends Component {
             Go back
           </button>
         </Link>
-        <label htmlFor="file">
-          <i
-            className="fas fa-paperclip mt-3 ml-4"
-            style={{
-              fontSize: "27px",
-              color: this.state.image === null ? "darkgray" : "darkseagreen"
-            }}
-          />
-          <input
-            style={{ display: "none" }}
-            ref="file"
-            type="file"
-            name="image-file"
-            className="upload-file"
-            accept="image/*"
-            id="file"
-            onChange={this.fileChangedHandler}
-            encType="multipart/form-data"
-          />
-        </label>
-        <button onClick={this.uploadHandler}>Upload!</button>
         <form onSubmit={this.onSubmit}>
           <div className="input-group">
             <div className="input-group-prepend">
@@ -422,13 +418,6 @@ class PostForm extends Component {
               <button
                 type="button"
                 className="btn btn-outline-secondary mr-3"
-                onClick={this.onSubmitTwitter}
-              >
-                Twitter
-              </button>
-              <button
-                type="button"
-                className="btn btn-outline-secondary mr-3"
                 onClick={() =>
                   this.setState(prevState => ({
                     promptMedia: !prevState.promptMedia
@@ -452,7 +441,7 @@ class PostForm extends Component {
               <p>Drop an image or click to select a file to upload.</p>
             </Dropzone>
           ) : null}{" "}
-        </form>
+        </form>{" "}
         {selectedfile}
         {dateinput}
       </div>

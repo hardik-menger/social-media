@@ -25,7 +25,7 @@ export default (state = initialState, action) => {
     case PAGES_LOADING:
       return { ...state, loading: true };
     case GET_PAGES:
-      return { ...state, pages: action.payload, loading: false };
+      return { ...state, pages: action.payload, loading: false, pageArray: [] };
     case DELETE_PAGE:
       return {
         ...state,
