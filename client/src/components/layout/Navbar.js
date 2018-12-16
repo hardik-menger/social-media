@@ -95,13 +95,14 @@ class Navbar extends Component {
     axios
       .get(`/api/twitter/request-token`)
       .then(res => {
-        res.json().then(url => {
-          this.win = window.open(
-            url.url,
-            "_blank",
-            "toolbar=yes,scrollbars=yes,resizable=yes,left=500,width=400,height=400"
-          );
-        });
+        console.log(res);
+        // res.json().then(url => {
+        this.win = window.open(
+          res.data.url,
+          "_blank",
+          "toolbar=yes,scrollbars=yes,resizable=yes,left=500,width=400,height=400"
+        );
+        // });
       })
       .catch(err => console.log(err));
   };
