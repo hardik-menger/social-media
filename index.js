@@ -20,10 +20,8 @@ mongoose
   .connect(db)
   .then(() => console.log("connected  to database"))
   .catch(err => console.log("err occured in connecting " + err));
-
 //passport middleware
 app.use(passport.initialize());
-
 //passport config
 require("./config/passport")(passport);
 

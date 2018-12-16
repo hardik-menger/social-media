@@ -185,10 +185,11 @@ router.post("/file-upload", (req, res) => {
                 accounts: accounts.map(obj => obj.accountid),
                 message,
                 date,
-                media_path: `C:/hardik/social-media/uploads/${
-                  req.file.filename
-                }`
+                media_path: path.resolve(
+                  `${process.cwd()}\\uploads\\${req.file.filename}`
+                )
               });
+
               task.save(function(err) {
                 if (err) return res.send(err);
                 //   task.sendTask();
