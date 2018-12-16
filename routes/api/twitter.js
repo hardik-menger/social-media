@@ -186,7 +186,11 @@ router.post("/file-upload", (req, res) => {
                 message,
                 date,
                 media_path: path.resolve(
-                  `${process.cwd()}\\uploads\\${req.file.filename}`
+                  fs.readFile(
+                    path.resolve(__dirname + `\\uploads`, req.file.filename),
+                    "UTF-8",
+                    callback
+                  )
                 )
               });
 
