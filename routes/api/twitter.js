@@ -61,7 +61,7 @@ router.get("/test", (req, res) => res.json({ msg: "users works" }));
 //@route GET api/twitter/request-token
 //@desc get request token
 //@access Public
-router.get("/request-token", (req, res) => {
+router.get(`http://localhost:${process.env.PORT}/request-token`, (req, res) => {
   twitter.getRequestToken((err, requestToken, requestSecret) => {
     if (err) res.status(500).send(err);
     else {
@@ -78,7 +78,7 @@ router.get("/request-token", (req, res) => {
 //@route GET api/twitter/access-token
 //@desc callback
 //@access Public
-router.get("/access-token", (req, res) => {
+router.get(`http://localhost:${process.env.PORT}/access-token`, (req, res) => {
   var requestToken = req.query.oauth_token,
     verifier = req.query.oauth_verifier;
   twitter.getAccessToken(
