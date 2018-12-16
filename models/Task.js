@@ -8,7 +8,7 @@ const port = process.env.PORT || 3001;
 var twitter = new Twitter({
   consumerKey: config.twitterConsumerkey,
   consumerSecret: config.twitterConsumerSecret,
-  callback: `http://localhost:${port}/api/twitter/access-token`
+  callback: `https://riidlfbproject.herokuapp.com/api/twitter/access-token`
 });
 
 var taskSchema = new mongoose.Schema({

@@ -50,7 +50,7 @@ function checkFileType(file, cb) {
 var twitter = new Twitter({
   consumerKey: config.twitterConsumerkey,
   consumerSecret: config.twitterConsumerSecret,
-  callback: `http://localhost:${port}/api/twitter/access-token`
+  callback: `https://riidlfbproject.herokuapp.com/api/twitter/access-token`
 });
 
 //@route GET api/twitter/test
