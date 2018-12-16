@@ -8,10 +8,12 @@ var Task = require("../../models/Task");
 var TwitterAccount = require("../../models/TwitterAccounts");
 const userController = require("../../controllers/userController");
 const taskController = require("../../controllers/taskController");
+const passport = require("passport");
+const fs = require("fs");
 var _requestSecret;
 // Set The Storage Engine
 const storage = multer.diskStorage({
-  destination: "./uploads/",
+  destination: "./routes/api/uploads/",
   filename: function(req, file, cb) {
     cb(
       null,
@@ -126,147 +128,156 @@ router.get("/access-token", (req, res) => {
 //@route POST api/twitter/status
 //@desc get access token and secret
 //@access Public
-router.post("/status", (req, res) => {
-  const { email, account_ids } = req.body;
-  User.findOne({ email }, (err, user) => {
-    if (!user) {
-      return res.status(401).send("Cannot verify user.");
-    } else if (err) {
-      return res.status(500).send(err);
-    }
+router.post(
+  "/status",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const { email, account_ids } = req.body;
+    User.findOne({ email }, (err, user) => {
+      if (!user) {
+        return res.status(401).send("Cannot verify user.");
+      } else if (err) {
+        return res.status(500).send(err);
+      }
 
-    console.log("received params_1");
+      console.log("received params_1");
 
-    Account.find({ _id: { $in: account_ids } }, (err, accounts) => {
-      if (err) return res.status(500).send("Cannot verify accounts.");
+      Account.find({ _id: { $in: account_ids } }, (err, accounts) => {
+        if (err) return res.status(500).send("Cannot verify accounts.");
 
-      var task = new Task({
-        user: user,
-        accounts: accounts,
-        message: req.body.message,
-        date: new Date(req.body.date)
-      });
-      task.save(function(err) {
-        if (err) return res.status(500).send(err);
-        task.sendTask();
-        return res.send({ response: "OK" });
+        var task = new Task({
+          user: user,
+          accounts: accounts,
+          message: req.body.message,
+          date: new Date(req.body.date)
+        });
+        task.save(function(err) {
+          if (err) return res.status(500).send(err);
+          task.sendTask();
+          return res.send({ response: "OK" });
+        });
       });
     });
-  });
-});
+  }
+);
 
 //@route POST api/twitter/file-upload
 //@desc get image/base64/upload
 //@access Public
-router.post("/file-upload", (req, res) => {
-  upload(req, res, err => {
-    if (err) {
-      res.json({ err });
-    } else {
-      if (req.file == undefined) {
-        res.json({ err: "file not found error" });
+router.post(
+  "/file-upload",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    upload(req, res, err => {
+      if (err) {
+        res.json({ err });
       } else {
-        let { email, account_ids, message, date } = JSON.parse(req.body.data);
-        date = new Date(date);
-        User.findOne({ email }, function(err, user) {
-          if (!user) {
-            return res.status(401).send("Cannot find user.");
-          } else if (err) {
-            return res.send(err);
-          }
-
-          TwitterAccount.find(
-            { accountid: { $in: JSON.parse(account_ids) } },
-            function(err, accounts) {
-              if (err) return res.json(err);
-
-              var task = new Task({
-                user: user,
-                accounts: accounts.map(obj => obj.accountid),
-                message,
-                date,
-                media_path: path.resolve(
-                  fs.readFile(
-                    path.resolve(__dirname + `\\uploads`, req.file.filename),
-                    "UTF-8",
-                    callback
-                  )
-                )
-              });
-
-              task.save(function(err) {
-                if (err) return res.send(err);
-                //   task.sendTask();
-                return res.send({ response: "OK" });
-              });
+        if (req.file == undefined) {
+          res.json({ err: "file not found error" });
+        } else {
+          let { email, account_ids, message, date } = JSON.parse(req.body.data);
+          date = new Date(date);
+          User.findOne({ email }, function(err, user) {
+            if (!user) {
+              return res.status(401).send("Cannot find user.");
+            } else if (err) {
+              return res.send(err);
             }
-          );
-        });
-        // twitter.uploadMedia(
-        //   {
-        //     isBase64: false,
-        //     media: `C:/hardik/social-media/uploads/${req.file.filename}`
-        //   },
-        //   accessToken,
-        //   accessSecret,
-        //   (error, data, response) => {
-        //     if (error) {
-        //       res.json(error.data);
-        //     } else {
-        //       twitter.statuses(
-        //         "update",
-        //         {
-        //           status: "status",
-        //           media_ids: data.media_id_string
-        //         },
-        //         accessToken,
-        //         accessSecret,
-        //         (error, data, response) => {
-        //           if (error) {
-        //             res.json(error.data);
-        //           } else {
-        //             res.send({ success: true });
-        //           }
-        //         }
-        //       );
-        //     }
-        //   }
-        // );
+
+            TwitterAccount.find(
+              { accountid: { $in: JSON.parse(account_ids) } },
+              function(err, accounts) {
+                if (err) return res.json(err);
+
+                var task = new Task({
+                  user: user,
+                  accounts: accounts.map(obj => obj.accountid),
+                  message,
+                  date,
+                  media_path: path.resolve(
+                    __dirname + `\\uploads`,
+                    req.file.filename
+                  )
+                });
+
+                task.save(function(err) {
+                  if (err) return res.send(err);
+                  //   task.sendTask();
+                  return res.send({ response: "OK" });
+                });
+              }
+            );
+          });
+          // twitter.uploadMedia(
+          //   {
+          //     isBase64: false,
+          //     media: `C:/hardik/social-media/uploads/${req.file.filename}`
+          //   },
+          //   accessToken,
+          //   accessSecret,
+          //   (error, data, response) => {
+          //     if (error) {
+          //       res.json(error.data);
+          //     } else {
+          //       twitter.statuses(
+          //         "update",
+          //         {
+          //           status: "status",
+          //           media_ids: data.media_id_string
+          //         },
+          //         accessToken,
+          //         accessSecret,
+          //         (error, data, response) => {
+          //           if (error) {
+          //             res.json(error.data);
+          //           } else {
+          //             res.send({ success: true });
+          //           }
+          //         }
+          //       );
+          //     }
+          //   }
+          // );
+        }
       }
-    }
-  });
-});
+    });
+  }
+);
 
 //@route POST api/twitter/save-token
 //@desc save token in twitteraccountcollection in db
 //@access Public
-router.post("/save-token", (request, response) => {
-  //  console.log(request.body.twitterid);
-  TwitterAccount.update(
-    { username: request.body.twitterauth.username },
-    { ...request.body.twitterauth },
-    {
-      upsert: true,
-      new: true
-    }
-  )
-    .then(res => {
-      User.updateOne(
-        { email: request.body.useremail },
-        {
-          $addToSet: {
-            twitteraccount: request.body.twitterid
+router.post(
+  "/save-token",
+  passport.authenticate("jwt", { session: false }),
+  (request, response) => {
+    //  console.log(request.body.twitterid);
+    TwitterAccount.update(
+      { username: request.body.twitterauth.username },
+      { ...request.body.twitterauth },
+      {
+        upsert: true,
+        new: true
+      }
+    )
+      .then(res => {
+        User.updateOne(
+          { email: request.body.useremail },
+          {
+            $addToSet: {
+              twitteraccount: request.body.twitterid
+            }
+          },
+          (err, res) => {
+            !err ? response.json(res) : response.json({ err });
           }
-        },
-        (err, res) => {
-          !err ? response.json(res) : response.json({ err });
-        }
-      );
-    })
-    .catch(e => {
-      response.json({ error: e });
-    });
-});
+        );
+      })
+      .catch(e => {
+        response.json({ error: e });
+      });
+  }
+);
 
 router.post("/user_accounts", userController.getUserAccounts);
 router.post("/post_task", taskController.postAddTask);
