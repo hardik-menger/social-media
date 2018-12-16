@@ -50,7 +50,7 @@ function checkFileType(file, cb) {
 var twitter = new Twitter({
   consumerKey: config.twitterConsumerkey,
   consumerSecret: config.twitterConsumerSecret,
-  callback: "http://localhost:3001/api/twitter/access-token"
+  callback: `http://localhost:${process.env.PORT}/api/twitter/access-token`
 });
 
 //@route GET api/twitter/test
@@ -168,6 +168,7 @@ router.post(
   "/file-upload",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
+    console.log("reached?auth err?");
     upload(req, res, err => {
       if (err) {
         res.json({ err });
@@ -195,7 +196,7 @@ router.post(
                   message,
                   date,
                   media_path: path.resolve(
-                    __dirname + `\\uploads`,
+                    __dirname + `/uploads`,
                     req.file.filename
                   )
                 });
