@@ -2,7 +2,7 @@
 
 
 
-SocialPort is a WebApp built on reactjs and nodejs which allows you to publish posts to multiple facebook pages , instagram and twitter profiles and schedule the
+SocialPort is a WebApp built on reactjs and nodejs which allows you to publish posts to multiple facebook pages , instagram and twitter profiles and schedule them
 
 
 
